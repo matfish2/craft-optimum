@@ -1,0 +1,123 @@
+{% do view.registerAssetBundle("matfish\\ActivityLog\\ActivityLogAssetBundle") %}
+
+{% extends "_layouts/cp.twig" %}
+{% set title = "Activity Log"|t('activity-log') %}
+
+{% block content %}
+    <div id="activity-log-app">
+        <v-server-table name="activity-log"
+                        ref="table"
+                        v-if="loaded"
+                        :columns="columns"
+                        :options="options"
+                        @loading="loadingTable=true"
+                        @loaded="loadingTable=false"
+                        url="/{{ craft.app.config.general.cpTrigger }}?action=activity-logs/activity-log/data">
+            <template slot="beforeLimit">
+                <date-range-picker @selected="updateDateRange"></date-range-picker>
+            </template>
+
+            <template slot="filter__actionSegments">
+                <v-select name="actionSegments"
+                          taggable
+                          style="min-width:150px;"
+                          label="text"
+                          placeholder="Search..."
+                          @input="v=>action=v"
+                          :reduce="(option)=>option.id ? option.id : option"
+                          :options="options.listColumns.actionSegments"></v-select>
+            </template>
+            <template slot="beforeTable">
+                <img :src="`${svgPath}/loading.svg`" v-if="svgPath && loadingTable"
+                     width="50"
+                     style="position:absolute;top:0;" alt="Loading">
+
+            </template>
+            <template slot="userId" slot-scope="{row}">
+                {!! row.fullName ? row.fullName : row.userName !!}
+            </template>
+
+            <template slot="createdAt" slot-scope="{row}">
+                {!! formatDate(row.createdAt) !!}
+            </template>
+
+            <template slot="responseCode" slot-scope="{row}">
+                {!! row.responseCode !!}
+            </template>
+
+            <template slot="execTime" slot-scope="{row}">
+                {!! row.execTime ? row.execTime + 's' : '-' !!}
+            </template>
+
+
+            <template v-slot:child_row="{row}">
+                <table class="request-details">
+                    <tbody>
+                    <tr>
+                        <th>URL</th>
+                        <td>{!! row.method !!} {!! row.url !!}</td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                        <th>Created at</th>
+                        <td>{!! formatDate(row.createdAt) !!}</td>
+                    </tr>
+                    <tr>
+                        <th>Action</th>
+                        <td>{!! getAction(row.actionSegments) !!}</td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                        <th>Site</th>
+                        <td>{!! getSite(row.siteId) !!}</td>
+                    </tr>
+                    <tr>
+                        <th>User</th>
+                        <td>{!! row.fullName ? row.fullName : row.username !!}</td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                        <th>Query</th>
+                        <td>
+                            <pre>{!! beautifyJson(row.query) !!}</pre>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Payload</th>
+                        <td>
+                            <pre>{!! beautifyJson(row.payload) !!}</pre>
+                        </td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                        <th>Response Code</th>
+                        <td>{!! row.responseCode !!}</td>
+                    </tr>
+                    <tr>
+                        <th>Exec. Time</th>
+                        <td>{!! row.execTime !!}s</td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                        <th>IP</th>
+                        <td>{!! row.ip !!}</td>
+                    </tr>
+                    <tr>
+                        <th>User Agent</th>
+                        <td>{!! row.userAgent !!}</td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                        <th>Is Control Panel?</th>
+                        <td>{!! row.isCp==='1' ? 'Yes' : 'No' !!}</td>
+                    </tr>
+                    <tr>
+                        <th>Is AJAX?</th>
+                        <td>{!! row.isAjax==='1' ? 'Yes' : 'No' !!}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </template>
+        </v-server-table>
+    </div>
+
+    <script>
+        window.cpTrigger = '{{ craft.app.config.general.cpTrigger }}';
+    </script>
+{% endblock %}
+

@@ -1,0 +1,39 @@
+{
+  "name": "matfish/craft-optimum",
+  "description": "Record HTTP requests to Craft",
+  "type": "craft-plugin",
+  "keywords": ["ab-testing","optimize","analytics"],
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Matanya Fishaimer",
+      "homepage": "https://developer-website.tld"
+    }
+  ],
+  "support": {
+    "email": "matfish2@gmail.com",
+    "issues": "https://github.com/matfish2/craft-optimum/issues?state=open",
+    "source": "https://github.com/matfish2/craft-optimum",
+    "docs": "https://github.com/matfish2/craft-optimum/blob/master/README.md"
+  },
+  "require": {
+    "craftcms/cms": "^4.0.0",
+    "ext-json": "*",
+    "nesbot/carbon": "^2.58"
+  },
+  "autoload": {
+    "psr-4": {
+      "matfish\\Optimum\\": "src/"
+    }
+  },
+  "extra": {
+    "name": "Optimum",
+    "handle": "optimum"
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
+  }
+}
