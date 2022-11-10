@@ -78,7 +78,7 @@ EOT;
             ->raw("if (\$variant==='original'):")
             ->subcompile($this->getNode('body'))
             ->raw("else:")
-            ->raw('$this->loadTemplate("optimum/' . $experiment . '/{$variant}.twig", null, $lineno)->display($context);')
+            ->raw('$this->loadTemplate("optimum/' . $experiment . '/{$variant}.twig", null,' .  $this->getTemplateLine() . ')->display($context);')
             ->raw("endif;");
     }
 }
