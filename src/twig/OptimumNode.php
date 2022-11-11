@@ -96,7 +96,7 @@ EOT;
             ->repr($vars)
             ->raw(");\n\n")
             ->raw($gaevent)
-            ->raw("if (\$variant==='original'):\n\n")
+            ->raw("if (\$variant==='original' || \Carbon\Carbon::now() > \Carbon\Carbon::parse('" . $e->endAt . "') || \Carbon\Carbon::now() < \Carbon\Carbon::parse('" . $e->startAt . "')):\n\n")
             ->subcompile($this->getNode('body'))
             ->raw("else:")
             ->raw('$this->loadTemplate("_optimum/' . $experiment . '/{$variant}.twig", null,' . $this->getTemplateLine() . ')->display($context);')
