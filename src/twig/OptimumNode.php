@@ -22,7 +22,7 @@ class OptimumNode extends Node
     public function compile(Compiler $compiler): void
     {
         $experiment = $this->getAttribute('experiment')->getAttribute('value');
-        $e = Experiment::find()->where("slug='$experiment'")->one();
+        $e = Experiment::find()->where("handle='$experiment'")->one();
 
         if (!$e) {
             throw new \Exception("Optimum: Unknown experiment {$experiment}");
