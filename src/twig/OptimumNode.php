@@ -37,8 +37,8 @@ class OptimumNode extends Node
 
         foreach ($variants as $variant) {
             $cumulativeWeight += $variant->weight;
-            $vars[$variant->slug] = $variant->weight;
-            $varsLookup[$variant->slug] = $variant->title;
+            $vars[$variant->handle] = $variant->weight;
+            $varsLookup[$variant->handle] = $variant->title;
         }
 
         $varsLookup['original'] = 'Original';
