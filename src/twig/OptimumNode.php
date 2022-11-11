@@ -33,16 +33,10 @@ class OptimumNode extends Node
         $vars = [];
         $varsLookup = [];
 
-        $cumulativeWeight = 0;
-
         foreach ($variants as $variant) {
-            $cumulativeWeight += $variant->weight;
             $vars[$variant->handle] = $variant->weight;
             $varsLookup[$variant->handle] = $variant->name;
         }
-
-        $varsLookup['original'] = 'Original';
-        $vars['original'] =  100 - $cumulativeWeight;
 
         $funcs = <<<EOT
 function getRandomWeightedElement(array \$weightedValues): string
