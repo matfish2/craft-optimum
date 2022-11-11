@@ -1,6 +1,6 @@
 {
   "name": "matfish/craft-optimum",
-  "description": "Server-side A/B Testing measured with GA4",
+  "description": "Server-side A/B Testing measured by GA4",
   "type": "craft-plugin",
   "keywords": ["ab-testing","optimize","analytics"],
   "license": "proprietary",
