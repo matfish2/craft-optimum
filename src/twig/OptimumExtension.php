@@ -8,7 +8,6 @@ class OptimumExtension extends AbstractExtension
 {
     public function getTokenParsers() : array
     {
-        \Yii::debug('Register token parser');
         return [
             new OptimumTokenParser()
         ];

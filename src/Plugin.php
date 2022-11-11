@@ -2,9 +2,12 @@
 
 namespace matfish\Optimum;
 
+use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\UrlHelper;
+use craft\services\Elements;
 use craft\web\UrlManager;
+use matfish\Optimum\elements\Experiment;
 use matfish\Optimum\models\Settings;
 use craft\base\Plugin as BasePlugin;
 use Craft;
@@ -19,19 +22,17 @@ class Plugin extends BasePlugin
     public function init()
     {
         parent::init();
+
         $this->registerTwigExtension();
-
 //        $this->_registerCpRoutes();
+        $this->registerEditRoutes();
 
-//        if (Craft::$app->request->isCpRequest) {
-//            $this->controllerNamespace = 'matfish\\ActivityLog\\controllers';
-//        } elseif (Craft::$app->request->isConsoleRequest) {
-//            $this->controllerNamespace = 'matfish\\ActivityLog\\controllers\\console';
-//        }
-//
-//        if (!$this->db->tableExists('{{%activitylog}}')) {
-//            return;
-//        }
+        if (Craft::$app->request->isCpRequest) {
+            $this->controllerNamespace = 'matfish\\Optimum\\controllers';
+        } elseif (Craft::$app->request->isConsoleRequest) {
+            $this->controllerNamespace = 'matfish\\Optimum\\controllers\\console';
+        }
+
     }
 
     protected function createSettingsModel(): Settings
@@ -47,29 +48,43 @@ class Plugin extends BasePlugin
         );
     }
 
+    /**
+     * Edit routes
+     */
+    public function registerEditRoutes(): void
+    {
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            static function (RegisterUrlRulesEvent $event) {
+                $event->rules['optimum/experiments/new'] = 'optimum/experiments/edit';
+                $event->rules['optimum/experiments/<experimentId:\d+>'] = 'optimum/experiments/edit';
+            }
+        );
+    }
 
     /**
      * Register CP routes.
      */
-    private function _registerCpRoutes(): void
-    {
-        Event::on(UrlManager::class, UrlManager::EVENT_REGISTER_CP_URL_RULES, function (RegisterUrlRulesEvent $event): void {
-            $rules = [
-                'settings/activity-logs' => 'activity-logs/settings/index',
-                'settings/activity-logs/actions' => 'activity-logs/actions/index',
-                'settings/activity-logs/settings' => 'activity-logs/settings/settings',
-            ];
-
-            $event->rules = array_merge($event->rules, $rules);
-        });
-    }
+//    private function _registerCpRoutes(): void
+//    {
+//        Event::on(UrlManager::class, UrlManager::EVENT_REGISTER_CP_URL_RULES, static function (RegisterUrlRulesEvent $event): void {
+//            $rules = [
+//                'settings/optimum' => 'optimum/settings/index',
+//                'settings/optimum/actions' => 'optimum/actions/index',
+//                'settings/optimum/settings' => 'optimum/settings/settings',
+//            ];
+//
+//            $event->rules = array_merge($event->rules, $rules);
+//        });
+//    }
 
     /**
      * @inheritdoc
      */
     public function getSettingsResponse(): mixed
     {
-        $url = UrlHelper::cpUrl('settings/activity-logs');
+        $url = UrlHelper::cpUrl('settings/optimum');
 
         Craft::$app->controller->redirect($url);
 
@@ -80,4 +95,25 @@ class Plugin extends BasePlugin
     {
         Craft::$app->view->registerTwigExtension(new OptimumExtension());
     }
+
+    /**
+     * @return array
+     */
+    public function getCpNavItem(): array
+    {
+        $item = parent::getCpNavItem();
+        $item['label'] = 'Experiments';
+
+        return $item;
+    }
+
+//    public function registerElementType(): void
+//    {
+//        Event::on(Elements::class,
+//            Elements::EVENT_REGISTER_ELEMENT_TYPES,
+//            function (RegisterComponentTypesEvent $event) {
+//                $event->types[] = Experiment::class;
+//            }
+//        );
+//    }
 }

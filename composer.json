@@ -1,6 +1,6 @@
 {
   "name": "matfish/craft-optimum",
-  "description": "Record HTTP requests to Craft",
+  "description": "Server-side A/B Testing measured with GA4",
   "type": "craft-plugin",
   "keywords": ["ab-testing","optimize","analytics"],
   "license": "proprietary",

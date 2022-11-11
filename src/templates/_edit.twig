@@ -1,0 +1,103 @@
+{# {% do view.registerAssetBundle('matfish\\Tablecloth\\TableclothCpAssetBundle') %} #}
+{% extends '_layouts/cp' %}
+{% set title = experiment.isNew() ?  ('New Experiment'|t('optimum')) : ('Edit Experiment'|t('optimum')) %}
+{% set fullPageForm = true %}
+
+
+{% import "_includes/forms" as forms %}
+
+
+{% block content %}
+    {{ actionInput('optimum/experiments/save') }}
+    {{ hiddenInput('experimentId', experiment.id) }}
+
+    {{ forms.textField({
+        first: true,
+        label: "Name"|t('app'),
+        instructions: "What are you testing?"|t('app'),
+        id: 'name',
+        name: 'name',
+        value: experiment.name,
+        errors: experiment.getErrors('name'),
+        autofocus: true,
+        required: true
+    }) }}
+
+    {{ forms.textField({
+        first: true,
+        label: "Handle"|t('app'),
+        instructions: "This will be used to reference the experiment in your twig template"|t('app'),
+        id: 'handle',
+        name: 'handle',
+        value: experiment.handle,
+        errors: experiment.getErrors('handle'),
+        autofocus: true,
+        required: true
+    }) }}
+
+    {{ forms.lightswitchField({
+        first: true,
+        label: "Enabled?"|t('app'),
+        instructions: "Switch off to pause an experiment in the middle"|t('app'),
+        id: 'enabled',
+        name: 'enabled',
+        on: experiment.enabled,
+        errors: experiment.getErrors('enabled'),
+        autofocus: true,
+        required: true
+    }) }}
+
+    {{ forms.editableTableField({
+        label: "Variants"|t('app'),
+        instructions: "Define variants for the experiment."|t('app'),
+        id: 'variants',
+        name: 'variants',
+        cols: {
+            name: {
+                type: 'singleline',
+                heading: "Name"|t('app'),
+                info: "This will be sent to GA4" |t('app'),
+                required:true
+            },
+            handle: {
+                type: 'singleline',
+                heading: "Handle"|t('app'),
+                info: "This will be used to reference the variant in the template file name"|t('app'),
+            },
+            weight: {
+                type: 'number',
+                heading: "Weight"|t('app'),
+                info: "Relative weight in percents."|t('app'),
+                thin: true
+            },
+        },
+        rows: variants | length ? variants : [{name:{value:'Original'},handle:'original',weight:100}],
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: false,
+        errors: []
+    }) }}
+
+    {{ forms.dateTimeField({
+        label: "Starts at"|t('optimum'),
+        instructions:'Optional. Leave empty to start immedieatly',
+        id: 'startAt',
+        name: 'startAt',
+        value: experiment.startAt,
+        errors: experiment.getErrors('startAt')
+    }) }}
+
+    {{ forms.dateTimeField({
+        label: "Ends at"|t('optimum'),
+        instructions: experiment.isNew ?  'Defaults to 30 days from now' : '',
+        id: 'endAt',
+        name: 'endAt',
+        value: experiment.endAt ?? defaultEndAt,
+        errors: experiment.getErrors('endAt')
+    }) }}
+{% endblock %}
+
+
+{% if not experiment.slug %}
+    {% js "new Craft.HandleGenerator('#name', '#handle');" %}
+{% endif %}

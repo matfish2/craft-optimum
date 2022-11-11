@@ -14,12 +14,11 @@ class Install extends Migration
         if (!$this->db->tableExists(self::EXPERIMENTS)) {
             $this->createTable(self::EXPERIMENTS, [
                 'id' => $this->primaryKey()->notNull(),
-                'title' => $this->string()->notNull(),
-                'slug' => $this->string()->notNull(), // = GA4 custom dimension name (e.g cta_button)
-                'section'=>$this->string()->notNull(), // = GA4 custom dimension param (e.g color)
+                'name' => $this->string()->notNull()->unique(),
+                'handle' => $this->string()->notNull()->unique(), // = GA4 custom dimension name (e.g cta_button)
                 'startAt' => $this->dateTime()->null(),
                 'endAt' => $this->dateTime()->null(),
-                'isActive' => $this->boolean(),
+                'enabled' => $this->boolean()->defaultValue(0),
                 'dateCreated' => $this->timestamp(),
                 'dateUpdated' => $this->timestamp()
             ]);
@@ -28,9 +27,11 @@ class Install extends Migration
         if (!$this->db->tableExists(self::VARIANTS)) {
             $this->createTable(self::VARIANTS, [
                 'id' => $this->primaryKey()->notNull(),
-                'experimentId'=>$this->bigInteger()->unsigned()->notNull(),
-                'name' => $this->string()->notNull(),
-                'weight'=>$this->smallInteger()->notNull(),
+                'experimentId' => $this->bigInteger()->unsigned()->notNull(),
+                'name' => $this->string()->notNull(), // Sent to GA4,
+                'handle' => $this->string()->notNull(), // Used as template name
+                'description' => $this->string()->null(),
+                'weight' => $this->smallInteger()->notNull(), // in percents
                 'dateCreated' => $this->timestamp(),
                 'dateUpdated' => $this->timestamp()
             ]);

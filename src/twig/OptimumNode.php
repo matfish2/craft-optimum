@@ -2,6 +2,7 @@
 
 namespace matfish\Optimum\twig;
 
+use matfish\Optimum\records\Experiment;
 use Twig\Compiler;
 use Twig\Node\Node;
 use yii\base\Exception;
@@ -21,6 +22,27 @@ class OptimumNode extends Node
     public function compile(Compiler $compiler): void
     {
         $experiment = $this->getAttribute('experiment')->getAttribute('value');
+        $e = Experiment::find()->where("slug='$experiment'")->one();
+
+        if (!$e) {
+            throw new \Exception("Optimum: Unknown experiment {$experiment}");
+        }
+
+        $variants = $e->getVariants()->all();
+
+        $vars = [];
+        $varsLookup = [];
+
+        $cumulativeWeight = 0;
+
+        foreach ($variants as $variant) {
+            $cumulativeWeight += $variant->weight;
+            $vars[$variant->slug] = $variant->weight;
+            $varsLookup[$variant->slug] = $variant->title;
+        }
+
+        $varsLookup['original'] = 'Original';
+        $vars['original'] =  100 - $cumulativeWeight;
 
         $funcs = <<<EOT
 function getRandomWeightedElement(array \$weightedValues): string
@@ -36,7 +58,7 @@ function getRandomWeightedElement(array \$weightedValues): string
 
         throw new \Exception("Optimum: Failed to randomize element");
     } 
-     function getOrSetExperimentCookie(\$experiment): string
+     function getOrSetExperimentCookie(\$experiment, \$vars): string
     {
         \$key = "optimum_{\$experiment}";
         \$cookie = \Craft::\$app->request->cookies->get(\$key);
@@ -44,12 +66,6 @@ function getRandomWeightedElement(array \$weightedValues): string
         if (\$cookie) {
             return \$cookie->value;
         }
-
-        \$vars = [
-            'original' => 90,
-            'red' => 5,
-            'blue' => 5
-        ];
 
         \$randomVariant = getRandomWeightedElement(\$vars);
 
@@ -68,17 +84,22 @@ function getRandomWeightedElement(array \$weightedValues): string
     }    
 EOT;
 
-        $gaevent = 'echo "<script>gtag(\'event\',\'' .  $experiment . '\', {\"data\":\'" . $variant . "\'})</script>";';
+        $gaevent = 'echo "<script>gtag(\'event\',\'' . $experiment . '\', {\"data\":\'" . $variantLookup[$variant] . "\'})</script>";';
 
         $compiler
             ->addDebugInfo($this)
             ->raw($funcs)
-            ->raw('$variant = getOrSetExperimentCookie("' . $experiment . '");')
+            ->raw('$variantLookup =')
+            ->repr($varsLookup)
+            ->raw(";\n\n")
+            ->raw('$variant = getOrSetExperimentCookie("' . $experiment . '",')
+            ->repr($vars)
+            ->raw(");\n\n")
             ->raw($gaevent)
-            ->raw("if (\$variant==='original'):")
+            ->raw("if (\$variant==='original'):\n\n")
             ->subcompile($this->getNode('body'))
             ->raw("else:")
-            ->raw('$this->loadTemplate("optimum/' . $experiment . '/{$variant}.twig", null,' .  $this->getTemplateLine() . ')->display($context);')
+            ->raw('$this->loadTemplate("_optimum/' . $experiment . '/{$variant}.twig", null,' . $this->getTemplateLine() . ')->display($context);')
             ->raw("endif;");
     }
 }
