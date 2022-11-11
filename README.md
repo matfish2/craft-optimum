@@ -63,7 +63,13 @@ Inside the template paste the code for the variation you wish to test. E.g:
    // Wide Banner Variant Code
    <img src="wide_banner.jpg" class="wide-banner"/>  
 ```
-#### 3. Set a Custom Dimension in GA4
+
+#### 4. Test your variants
+Now that everything is set up, the plugin will randomize a variant and persist it in a cookie, to keep the experience consistent per-user.
+You can test your variants (and the original) by adding a `?optimum={variant}` query parameter to your URL.
+E.g `?optimum=wideBanner` or `?optimum=original`. The plugin will disregard the parameter if the value does not correspond to one of the variants.
+
+#### 5. Set a Custom Dimension in GA4
 The last piece of the puzzle is telling GA4 to aggregate the events sent from your site into a custom dimension.
 1. Open GA for your property and go to **Configure->Custom Definitions**
 2. Click on the **Create custom dimensions** button
