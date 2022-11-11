@@ -12,6 +12,8 @@ use yii\base\InvalidConfigException;
 
 class ExperimentsController extends \craft\web\Controller
 {
+    protected ?Experiment $experiment;
+
     protected array $params = [
         'name' => 'string',
         'handle' => 'string',
@@ -28,9 +30,21 @@ class ExperimentsController extends \craft\web\Controller
             return $this->redirect('optimum');
         }
 
+        if ($experiment->isNew()) {
+            $variants = [];
+        } else {
+            $exp = ExperimentRecord::findOne($experiment->id);
+            if (!$exp) {
+                $variants = [];
+            } else {
+                $variants = $exp->getVariants()->all();
+            }
+
+        }
+
         $data = [
             'experiment' => $experiment,
-            'variants' => $experiment->id ? ExperimentRecord::findOne($experiment->id)->getVariants()->all() : [],
+            'variants' => $variants,
             'defaultEndAt' => Carbon::now()->addDays(30)
         ];
 
@@ -51,22 +65,42 @@ class ExperimentsController extends \craft\web\Controller
 
         $experimentId = $this->request->getBodyParam('experimentId');
 
-        $experiment = $experimentId ? Experiment::findOne($experimentId) : new Experiment();
+        $this->experiment = $experimentId ? Experiment::findOne($experimentId) : new Experiment();
 
-        if (!$experiment) {
+        if (!$this->experiment) {
             $this->setFailFlash(Craft::t('optimum', 'Experiment id not found'));
             return null;
         }
 
-        $experiment = $this->setParamsFromRequest($experiment);
+        $this->setParamsFromRequest();
+
         // Try to save it
-        if (!Craft::$app->elements->saveElement($experiment) || !$this->saveVariants($experiment->id, $this->request->getBodyParam('variants'))) {
+        if (!Craft::$app->elements->saveElement($this->experiment)) {
             $this->setFailFlash(Craft::t('optimum', 'Failed to save experiment'));
-            ExperimentRecord::findOne($experiment->id)->delete();
 
             // Send the event back to the edit action
             Craft::$app->urlManager->setRouteParams([
-                'experiment' => $experiment,
+                'experiment' => $this->experiment
+            ]);
+
+            return null;
+        }
+
+        $varErrors = $this->saveVariants($this->request->getBodyParam('variants'));
+
+        if (count($varErrors) > 0) {
+            $this->setFailFlash(Craft::t('optimum', 'Failed to save experiment variants'));
+
+            ExperimentRecord::findOne($this->experiment->id)->delete();
+
+            foreach ($varErrors as $error) {
+                $this->experiment->addError('variants', $error);
+            }
+
+            // Send the event back to the edit action
+            Craft::$app->urlManager->setRouteParams([
+                'experiment' => $this->experiment,
+                'variants' => $this->request->getBodyParam('variants')
             ]);
 
             return null;
@@ -82,7 +116,7 @@ class ExperimentsController extends \craft\web\Controller
      * @throws \JsonException
      * @throws \yii\base\InvalidConfigException
      */
-    private function setParamsFromRequest(Experiment $experiment): Experiment
+    private function setParamsFromRequest()
     {
         $values = Craft::$app->request->getBodyParams();
 
@@ -104,10 +138,8 @@ class ExperimentsController extends \craft\web\Controller
                 }
             }
 
-            $experiment->{$key} = $value;
+            $this->experiment->{$key} = $value;
         }
-
-        return $experiment;
     }
 
 
@@ -129,29 +161,54 @@ class ExperimentsController extends \craft\web\Controller
         return (new Experiment());
     }
 
-    private function saveVariants(int $experimentId, array $variants): bool
+    private function saveVariants(array $variants): array
     {
         $newIds = [];
-        foreach ($variants as $variant) {
+        $errors = [];
+        $totalWeight = 0;
+
+        foreach ($variants as $index => $variant) {
 
             $v = new Variant();
-            $v->experimentId = $experimentId;
+            $v->experimentId = $this->experiment->id;
             $v->name = $variant['name'];
             $v->handle = $variant['handle'];
-            $v->weight = $variant['weight'];
+            $v->weight = (int)$variant['weight'];
+
+            $totalWeight += $v->weight;
+
+            if (!$v->name) {
+                $errors[] = "Name must be set on variant {$index}";
+            }
+
+            if (!$v->handle) {
+                $errors[] = "Handle must be set on variant {$index}";
+            }
+
+            if (!$v->weight) {
+                $errors[] = "Weight must be set on variant {$index}";
+            }
+
+            if ($v->weight < 0 || $v->weight > 100) {
+                $errors[] = "Weight must be a number between 0 and 100 on variant {$index}";
+            }
 
             if (!Craft::$app->elements->saveElement($v)) {
-                return false;
+                $errors[] = "Failed to save variant {$index}";
             }
 
             $newIds[] = $v->id;
         }
 
+        if ($totalWeight !== 100) {
+            $errors[] = "Total variants weight must be 100%";
+        }
+
         $newIds = implode(",", $newIds);
 
-        \matfish\Optimum\records\Variant::deleteAll("experimentId=$experimentId AND id NOT IN ({$newIds})");
+        \matfish\Optimum\records\Variant::deleteAll("experimentId={$this->experiment->id} AND id NOT IN ({$newIds})");
 
-        return true;
+        return $errors;
     }
 
 

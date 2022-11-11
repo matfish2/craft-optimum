@@ -54,6 +54,12 @@ function getRandomWeightedElement(array \$weightedValues): string
     } 
      function getOrSetExperimentCookie(\$experiment, \$vars): string
     {
+        \$testVar = Craft::\$app->request->getParam('optimum');
+        
+        if (\$testVar && in_array(\$testVar, array_keys(\$vars))) {
+            return \$testVar;
+        }
+        
         \$key = "optimum_{\$experiment}";
         \$cookie = \Craft::\$app->request->cookies->get(\$key);
 

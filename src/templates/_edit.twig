@@ -71,11 +71,13 @@
                 thin: true
             },
         },
-        rows: variants | length ? variants : [{name:{value:'Original'},handle:'original',weight:100}],
+        rows: variants | length ? variants : [{name:{value:'Original',readonly:true},handle:'original',weight:100}],
+        addRowLabel: 'Add Variant',
+        minRows:2,
         allowAdd: true,
         allowDelete: true,
         allowReorder: false,
-        errors: []
+        errors: experiment.getErrors('variants')
     }) }}
 
     {{ forms.dateTimeField({
@@ -95,9 +97,20 @@
         value: experiment.endAt ?? defaultEndAt,
         errors: experiment.getErrors('endAt')
     }) }}
+
 {% endblock %}
+
+{% js %}
+    console.log('rum')
+    const table = $("#variants");
+    const originalRow = table.find("tr[data-id=0]");
+    originalRow.find("td:first-child").find("textarea").prop("readonly",true)
+    originalRow.find("td:nth-child(2)").find("textarea").prop("readonly",true)
+
+{% endjs %}
 
 
 {% if not experiment.slug %}
     {% js "new Craft.HandleGenerator('#name', '#handle');" %}
 {% endif %}
+
