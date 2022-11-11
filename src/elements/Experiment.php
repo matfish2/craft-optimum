@@ -5,6 +5,8 @@ namespace matfish\Optimum\elements;
 use Carbon\Carbon;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
+use craft\elements\User;
+use craft\helpers\UrlHelper;
 use matfish\Optimum\actions\DeleteAction;
 
 class Experiment extends Element
@@ -85,23 +87,64 @@ class Experiment extends Element
     public function getTableAttributeHtml($attribute): string
     {
 
-        $root = \Craft::getAlias('@web');
-        $cpTrigger = getenv('CP_TRIGGER') ?: 'admin';
         $enabled = $this->enabled ? 'enabled' : '';
 
         switch ($attribute) {
-            case 'name':
+            case 'enabled':
             {
-                return "<span class='status $enabled'></span><a href='$root/$cpTrigger/optimum/experiments/$this->id'>$this->name</a>";
+                return "<span class='status $enabled element'></span>";
+            }
+            case 'endAt':
+            {
+                return Carbon::parse($this[$attribute])->format('d-m-Y H:i');
             }
         }
 
         return $this[$attribute];
     }
 
+    public function cpEditUrl(): ?string
+    {
+        $path = sprintf('optimum/experiments/%s', $this->id);
+        return UrlHelper::cpUrl($path);
+    }
+
+    public function getUiLabel(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCpEditUrl(): ?string
+    {
+        $cpEditUrl = $this->cpEditUrl();
+
+        if (!$cpEditUrl) {
+            return null;
+        }
+
+        $params = [];
+
+
+        return UrlHelper::urlWithParams($cpEditUrl, $params);
+    }
+
+    public function canView(User $user): bool
+    {
+        return true;
+    }
+
+
     public static function defineDefaultTableAttributes(string $source): array
     {
-        return ['name'];
+        return ['id', 'enabled', 'endAt'];
+    }
+
+    public function canDelete(User $user): bool
+    {
+        return true;
     }
 
     /**
@@ -111,13 +154,15 @@ class Experiment extends Element
     {
         return [
             'id' => \Craft::t('app', 'ID'),
-            'name' => \Craft::t('app', 'Name'),
+            'enabled' => \Craft::t('app', 'Enabled?'),
+            'endAt' => \Craft::t('app', 'Ends At')
+//            'name' => \Craft::t('app', 'Name'),
         ];
     }
 
     protected static function defineSearchableAttributes(): array
     {
-        return ['name', 'handle'];
+        return ['name'];
     }
 
     protected static function defineActions(string $source = null): array

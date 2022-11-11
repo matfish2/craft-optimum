@@ -8,6 +8,6 @@ class DeleteAction extends Delete
 {
     public function canHardDelete(): bool
     {
-        return false;
+        return true;
     }
 }
