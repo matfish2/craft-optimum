@@ -78,7 +78,7 @@ function getRandomWeightedElement(array \$weightedValues): string
     }    
 EOT;
 
-        $gaevent = 'echo "<script>gtag(\'event\',\'' . $experiment . '\', {\"data\":\'" . $variantLookup[$variant] . "\'})</script>";';
+        $gaevent = 'echo "<script>gtag(\'event\',\'' . $experiment . '\', {\"' . $experiment . '\":\'" . $variantLookup[$variant] . "\'});</script>";';
 
         $compiler
             ->addDebugInfo($this)
