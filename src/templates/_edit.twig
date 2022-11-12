@@ -26,7 +26,7 @@
     {{ forms.textField({
         first: true,
         label: "Handle"|t('app'),
-        instructions: "This will be used to reference the experiment in your twig template"|t('app'),
+        instructions: "This will be used to reference the experiment in your twig templates folder and in GA4's Custom Dimension"|t('app'),
         id: 'handle',
         name: 'handle',
         value: experiment.handle,
@@ -67,7 +67,7 @@
             weight: {
                 type: 'number',
                 heading: "Weight"|t('app'),
-                info: "Relative weight in percents."|t('app'),
+                info: "Relative weight in percents. Must add up to 100%"|t('app'),
                 thin: true
             },
         },
