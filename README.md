@@ -1,6 +1,6 @@
 ## Craft Optimum
 
-This plugin allows the user to conduct server-side A/B testing in Craft.
+This plugin allows the user to conduct server-side A/B testing in CraftCMS.
 As opposed to client-side testing (e.g using Google Optimize), the test variant is rendered on the server-side, resulting in better UX, performance and enhanced flexibility.
 
 Once an experiment is set the data is automatically sent to Google Analytics 4 as a [custom dimension](https://support.google.com/analytics/answer/10075209).
@@ -12,6 +12,7 @@ You then have the full power of analytics to compare the test groups over differ
 2. A Google Analytics 4 (GA4) Account. 
 3. Google Tag Manager script installed on the page (type `gtag` in the browser console to verify).
 
+> **_NOTE:_** While the last two points are not crucial for development, for the sake of completion it is recommended to create a fake `gtag` [function](#local-development) 
 ### Installation
 
 1. Include the package:
@@ -82,15 +83,32 @@ All Done! Once GA has collected enough data, you can start comparing the perform
 ### Troubleshooting
 Before opening an issue please make sure that:
 1. Cookies are enabled 
-2. Caching is disabled (e.g Blitz), as plugin decides in real-time which variant to serve.
+2. Caching is disabled on the testable page (e.g Blitz), as plugin decides in real-time which variant to serve.
 3. GTM is installed on the page (type `gtag` in the console to verify).
-
+4. If you edit an existing experiment (It is recommended not to do so once it has gone live), you need to delete the template cache, so it will recompile with the fresh details.
 ### Caveats
 
 - Note that the code inside the `optimum` tag is scoped. So variables defined inside the tag block containing the original variation (or in the variant templates) will not be available externally.
+
+### Local Development
+When developing locally you are likely not going to have `gtag` installed, which will result in the following console error:
+```
+Uncaught ReferenceError: gtag is not defined
+```
+
+While there is no issue with ignoring this for development, for the sake of completion, and to see what arguments are being sent to GA, you may want to add a fake `gtag` function in your `<head>` section:
+```twig  
+{% if (getenv('ENVIRONMENT') is same as ('dev')) %}
+  <script>
+      function gtag() {
+        console.log(arguments)
+       }
+   </script>
+{% endif %}
+```
 ### License
 
-You can try Activity Log in a development environment for as long as you like. Once your site goes live, you are
+You can try Optimum in a development environment for as long as you like. Once your site goes live, you are
 required to purchase a license for the plugin. License is purchasable through the [Craft Plugin Store](https://plugins.craftcms.com/optimum).
 
 For more information, see Craft's [Commercial Plugin Licensing](https://craftcms.com/docs/4.x/plugins.html#commercial-plugin-licensing).

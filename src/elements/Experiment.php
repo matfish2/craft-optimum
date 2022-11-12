@@ -92,11 +92,19 @@ class Experiment extends Element
         switch ($attribute) {
             case 'enabled':
             {
-                return "<span class='status $enabled element'></span>";
+                return "<div><span class='status $enabled element'></span></div>";
             }
+            case 'startAt':
+                $this[$attribute] = $this[$attribute] ?? $this->dateCreated;
+                return Carbon::parse($this[$attribute])->toDayDateTimeString();
             case 'endAt':
             {
-                return Carbon::parse($this[$attribute])->format('d-m-Y H:i');
+                return Carbon::parse($this[$attribute])->toDayDateTimeString();
+            }
+            case 'duration':
+            {
+                $start = $this->startAt = $this->startAt ?? $this->dateCreated;
+                return Carbon::parse($this->endAt)->diffInDays($start) . ' days';
             }
         }
 
@@ -139,7 +147,7 @@ class Experiment extends Element
 
     public static function defineDefaultTableAttributes(string $source): array
     {
-        return ['id', 'enabled', 'endAt'];
+        return ['enabled', 'startAt', 'endAt', 'duration'];
     }
 
     public function canDelete(User $user): bool
@@ -148,15 +156,15 @@ class Experiment extends Element
     }
 
     /**
-     * @return array
+ * @return array
      */
     protected static function defineTableAttributes(): array
     {
         return [
-            'id' => \Craft::t('app', 'ID'),
             'enabled' => \Craft::t('app', 'Enabled?'),
-            'endAt' => \Craft::t('app', 'Ends At')
-//            'name' => \Craft::t('app', 'Name'),
+            'startAt' => \Craft::t('app', 'Start date'),
+            'endAt' => \Craft::t('app', 'End date'),
+            'duration'=>\Craft::t('app', 'Duration')
         ];
     }
 

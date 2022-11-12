@@ -61,7 +61,7 @@ class ExperimentsController extends \craft\web\Controller
     public function actionSave()
     {
         // Ensure the user has permission to save events
-//        $this->requirePermission('edit-tablecloth');
+//        $this->requirePermission('edit-experiment');
 
         $experimentId = $this->request->getBodyParam('experimentId');
 

@@ -85,6 +85,7 @@ function getRandomWeightedElement(array \$weightedValues): string
 EOT;
 
         $gaevent = 'echo "<script>gtag(\'event\',\'' . $experiment . '\', {\"' . $experiment . '\":\'" . $variantLookup[$variant] . "\'});</script>";';
+        $startCondition = (bool)$e->startAt ? " || \Carbon\Carbon::now() < \Carbon\Carbon::parse('$e->startAt')" : "";
 
         $compiler
             ->addDebugInfo($this)
@@ -95,8 +96,9 @@ EOT;
             ->raw('$variant = getOrSetExperimentCookie("' . $experiment . '",')
             ->repr($vars)
             ->raw(");\n\n")
-            ->raw($gaevent)
-            ->raw("if (\$variant==='original' || \Carbon\Carbon::now() > \Carbon\Carbon::parse('" . $e->endAt . "') || \Carbon\Carbon::now() < \Carbon\Carbon::parse('" . $e->startAt . "')):\n\n")
+            ->raw("\$inactive = !$e->enabled || \Carbon\Carbon::now() > \Carbon\Carbon::parse('" . $e->endAt . "') $startCondition;")
+            ->raw("if (!\$inactive): " . $gaevent . " endif;")
+            ->raw("if (\$variant==='original' || \$inactive):\n\n")
             ->subcompile($this->getNode('body'))
             ->raw("else:")
             ->raw('$this->loadTemplate("_optimum/' . $experiment . '/{$variant}.twig", null,' . $this->getTemplateLine() . ')->display($context);')
