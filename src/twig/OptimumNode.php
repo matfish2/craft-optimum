@@ -2,7 +2,6 @@
 
 namespace matfish\Optimum\twig;
 
-use Carbon\Carbon;
 use matfish\Optimum\records\Experiment;
 use Twig\Compiler;
 use Twig\Node\Node;
@@ -63,7 +62,7 @@ function getRandomWeightedElement(array \$weightedValues): string
 
         throw new \Exception("Optimum: Failed to randomize element");
     } 
-     function getOrSetExperimentCookie(\$experiment, \$vars, \$expiryInSeconds): string
+     function getOrSetExperimentCookie(\$experiment, \$vars, \$expiry): string
     {
         \$testVar = Craft::\$app->request->getParam('optimum');
         
@@ -86,7 +85,7 @@ function getRandomWeightedElement(array \$weightedValues): string
             'name' => \$key,
             'httpOnly' => true,
             'value' => \$randomVariant,
-            'expire' => time() + \$expiryInSeconds,
+            'expire' => \$expiry,
         ]);
 
         Craft::\$app->getResponse()->getCookies()->add(\$cookie);
@@ -112,7 +111,7 @@ EOT;
             ->raw(";\n\n")
             ->raw('if (!isset($variant)): $variant = getOrSetExperimentCookie("' . $experiment . '",')
             ->repr($vars)
-            ->raw(",\Carbon\Carbon::parse('$e->endAt')->diffInSeconds(\Carbon\Carbon::now())); endif;\n\n")
+            ->raw(",\Carbon\Carbon::parse('$e->endAt')->unix()); endif;\n\n")
             ->raw("\$inactive = !$e->enabled || \Carbon\Carbon::now() > \Carbon\Carbon::parse('" . $e->endAt . "') $startCondition; \n\n");
 
         if ($explicitVariant) {
