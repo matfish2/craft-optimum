@@ -13,7 +13,13 @@ class OptimumNode extends Node
 {
     public function __construct($nodes, $lineno = 0, $tag = null)
     {
-        parent::__construct(['body' => $nodes[0]], ['experiment' => $nodes[1]], $lineno, $tag);
+        parent::__construct(
+            ['body' => $nodes[0]],
+            [
+                'experiment' => $nodes[1],
+                'variant' => $nodes[2] ?? null
+            ],
+            $lineno, $tag);
     }
 
     /**
@@ -25,14 +31,17 @@ class OptimumNode extends Node
         $experiment = $this->getAttribute('experiment')->getAttribute('value');
         $e = Experiment::find()->where("handle='$experiment'")->one();
 
+        $explicitVariant = $this->getAttribute('variant');
+        $explicitVariant = $explicitVariant ? $explicitVariant->getAttribute('value') : false;
+
         if (!$e) {
             throw new \Exception("Optimum: Unknown experiment {$experiment}");
         }
 
-        $variants = $e->getVariants()->all();
-
         $vars = [];
         $varsLookup = [];
+
+        $variants = $e->getVariants()->all();
 
         foreach ($variants as $variant) {
             $vars[$variant->handle] = $variant->weight;
@@ -40,6 +49,7 @@ class OptimumNode extends Node
         }
 
         $funcs = <<<EOT
+if (!function_exists('getOrSetExperimentCookie')):
 function getRandomWeightedElement(array \$weightedValues): string
     {
         \$rand = random_int(1, (int)array_sum(\$weightedValues));
@@ -83,26 +93,45 @@ function getRandomWeightedElement(array \$weightedValues): string
 
         return \$randomVariant;
     }    
+    endif;
 EOT;
 
         $gaevent = 'echo "<script>gtag(\'event\',\'' . $experiment . '\', {\"' . $experiment . '\":\'" . $variantLookup[$variant] . "\'});</script>";';
         $startCondition = (bool)$e->startAt ? " || \Carbon\Carbon::now() < \Carbon\Carbon::parse('$e->startAt')" : "";
 
         $compiler
-            ->addDebugInfo($this)
-            ->raw($funcs)
-            ->raw('$variantLookup =')
+            ->addDebugInfo($this);
+
+        if (!function_exists('getOrSetExperimentCookie')) {
+            $compiler->
+            raw($funcs);
+        }
+
+        $compiler->raw('$variantLookup =')
             ->repr($varsLookup)
             ->raw(";\n\n")
-            ->raw('$variant = getOrSetExperimentCookie("' . $experiment . '",')
+            ->raw('if (!isset($variant)): $variant = getOrSetExperimentCookie("' . $experiment . '",')
             ->repr($vars)
-            ->raw(",\Carbon\Carbon::parse('$e->endAt')->diffInSeconds(\Carbon\Carbon::now()));\n\n")
-            ->raw("\$inactive = !$e->enabled || \Carbon\Carbon::now() > \Carbon\Carbon::parse('" . $e->endAt . "') $startCondition;")
-            ->raw("if (!\$inactive): " . $gaevent . " endif;")
-            ->raw("if (\$variant==='original' || \$inactive):\n\n")
-            ->subcompile($this->getNode('body'))
-            ->raw("else:")
-            ->raw('$this->loadTemplate("_optimum/' . $experiment . '/{$variant}.twig", null,' . $this->getTemplateLine() . ')->display($context);')
-            ->raw("endif;");
+            ->raw(",\Carbon\Carbon::parse('$e->endAt')->diffInSeconds(\Carbon\Carbon::now())); endif;\n\n")
+            ->raw("\$inactive = !$e->enabled || \Carbon\Carbon::now() > \Carbon\Carbon::parse('" . $e->endAt . "') $startCondition; \n\n");
+
+        if ($explicitVariant) {
+            // Only fire event once, for original variant
+            if ($explicitVariant === 'original') {
+                $compiler->raw("if (!\$inactive): " . $gaevent . " endif;");
+            }
+
+            // Only compile body for original variant when experiment is inactive OR if experiment is active and random variant is the explicit variant
+            $compiler->raw("if ((!\$inactive && \$variant==='$explicitVariant') || (\$inactive && '$explicitVariant'==='original')):\n\n")
+                ->subcompile($this->getNode('body'))
+                ->raw("endif;");
+        } else {
+            $compiler->raw("if (!\$inactive): " . $gaevent . " endif;")
+                ->raw("if (\$variant==='original' || \$inactive):\n\n")
+                ->subcompile($this->getNode('body'))
+                ->raw("else:")
+                ->raw('$this->loadTemplate("_optimum/' . $experiment . '/{$variant}.twig", null,' . $this->getTemplateLine() . ')->display($context);')
+                ->raw("endif;");
+        }
     }
 }
