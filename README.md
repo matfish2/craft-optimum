@@ -87,7 +87,7 @@ E.g:
 ```
 The plugin will only compile the relevant variant.
 ##### Method C: Get only variant value 
-In some cases, there is no need to create multiple templates, as the value of the random variant can replace a constant in the code.
+In some cases there is no need to create multiple templates, as the value of the random variant can replace a constant in the code.
 E.g, Suppose you have a blog and want to test different per-page values. Here is an example implementation for a hypothetical `recordsPerPage` experiment:
 ```html
 {% set variant = optimumGetVariant('recordsPerPage') %}
@@ -107,7 +107,10 @@ E.g `?optimum=wideBanner` or `?optimum=original`. The plugin will disregard the 
 The last piece of the puzzle is telling GA4 to aggregate the events sent from your site into a custom dimension.
 1. Open GA for your property and go to **Configure->Custom Definitions**
 2. Click on the **Create custom dimensions** button
-3. In the Modal select **Dimension Name** (can be anything you want) and **Scope** (Event or User). Then under **Event parameter** type the experiment handle (e.g `bannerType`).
+3. In the modal fill in the following details:
+    - **Dimension Name** : Descriptive name. Can be anything you want. 
+    - **Scope** : Event 
+    - **Event parameter** :  Experiment handle (e.g `bannerType`). 
 4. Click "Save"
 
 ------
