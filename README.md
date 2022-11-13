@@ -44,6 +44,8 @@ An experiment consists of the following fields:
 - **Starts at**: Optional field to defer the experiment. If left empty experiment starts immediately (assuming that "Enabled?" is on).
 - **Ends at**: Set to 30 days in the future by default.
 #### 2. Create the variants in twig
+#####  Method A: Polymorphism
+
 Wrap the part of code you wish to test (your "original" variant) with the `{% optimum 'experimentHandle' %}` tag like so:
 
 ```html
@@ -64,13 +66,32 @@ Inside the template paste the code for the variation you wish to test. E.g:
    // Wide Banner Variant Code
    <img src="wide_banner.jpg" class="wide-banner"/>  
 ```
+##### Method B: Explicit Variant Declaration
 
-#### 4. Test your variants
+While method A is useful when you want to switch components, sometimes you may wish to switch the location of the component on the page (e.g Test different CTAs positions).
+With method B, you can declare multiple `optimum` blocks with the second parameter being the variant:
+
+E.g:
+```html
+{% optimum 'cta_position' 'top' %}
+   <button>Buy now!</button>
+{% endoptimum %}
+// Some HTML
+{% optimum 'cta_position' 'original' %}
+   <button>Buy now!</button>  
+{% endoptimum %}
+// Some more HTML
+{% optimum 'cta_position' 'bottom' %}
+   <button>Buy now!</button>
+{% endoptimum %}
+```
+The plugin will only compile the relevant variant.
+#### 3. Test your variants
 Now that everything is set up, the plugin will randomize a variant and persist it in a cookie, to keep the experience consistent per-user.
 You can test your variants (and the original) by adding a `?optimum={variant}` query parameter to your URL.
 E.g `?optimum=wideBanner` or `?optimum=original`. The plugin will disregard the parameter if the value does not correspond to one of the variants.
 
-#### 5. Set a Custom Dimension in GA4
+#### 4. Set a Custom Dimension in GA4
 The last piece of the puzzle is telling GA4 to aggregate the events sent from your site into a custom dimension.
 1. Open GA for your property and go to **Configure->Custom Definitions**
 2. Click on the **Create custom dimensions** button
