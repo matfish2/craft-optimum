@@ -92,7 +92,7 @@ E.g, Suppose you have a blog and want to test different per-page values. Here is
 ```html
 {% set variant = optimumGetVariant('recordsPerPage') %}
 {% set perPage = variant is same as ('original') ? 6 : 9 %} // Or use a switch statement if you have more than 2 variants
-{% paginate query.limit(variant) as pageInfo, pageEntries %}
+{% paginate query.limit(perPage) as pageInfo, pageEntries %}
 // Pagination code
 {{ optimumFireEvent('recordsPerPage') | raw }}
 ```
