@@ -14,7 +14,7 @@ use yii\base\Event;
 class Plugin extends BasePlugin
 {
     public bool $hasCpSection = true;
-    public bool $hasCpSettings = true;
+    public bool $hasCpSettings = false;
 
     public function init()
     {
