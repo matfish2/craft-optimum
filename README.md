@@ -36,7 +36,7 @@ An experiment consists of the following fields:
   1. In naming the folder for the variants' templates.
   2. As the param name, when setting up GA4's custom dimension 
 - **Enabled?** - Weather the experiment is currently active. This can be used to pause or permanently stop the experiment
-- **Variants** - The different variants for the experiment. E.g if you are testing different hero banners you would set their reference here. An "original" variant is pre-set and refers to the control group, represented by your current code. It cannot be modified or deleted, other than its weight.
+- **Variants** - The different variants for the experiment. E.g if you are testing different hero banners you would set their reference here. An "original" variant is pre-set and refers to the control group, represented by your current code. Its handle cannot be modified, and it cannot be deleted.
     Each variant comprises three fields:
   - Name: Human readable name. This will be sent to GA4 as the value (E.g "Wide Banner")
   - Handle: Used for naming the variant template in twig (E.g "wideBanner)

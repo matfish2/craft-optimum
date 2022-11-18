@@ -104,8 +104,10 @@
     console.log('rum')
     const table = $("#variants");
     const originalRow = table.find("tr[data-id=0]");
-    originalRow.find("td:first-child").find("textarea").prop("readonly",true)
+    // Disable handle change on original variant
     originalRow.find("td:nth-child(2)").find("textarea").prop("readonly",true)
+    // Disable deletion of original row
+    originalRow.find("td:nth-child(4)").find("button.delete").remove()
 
 {% endjs %}
 
