@@ -88,7 +88,7 @@ E.g:
 The plugin will only compile the relevant variant.
 ##### Method C: Get only variant value 
 In some cases there is no need to create multiple templates, as the value of the random variant can replace a constant in the code.
-E.g, Suppose you have a blog and want to test different per-page values. Here is an example implementation for a hypothetical `recordsPerPage` experiment:
+E.g, Suppose you have a blog and want to test different per-page values. Here is an example implementation for a hypothetical ([or is it?](https://blogify.frb.io/blog/index)) `recordsPerPage` experiment:
 ```html
 {% set variant = optimumGetVariant('recordsPerPage') %}
 {% set perPage = variant is same as ('original') ? 6 : 9 %} // Or use a switch statement if you have more than 2 variants
@@ -96,8 +96,9 @@ E.g, Suppose you have a blog and want to test different per-page values. Here is
 // Pagination code
 {{ optimumFireEvent('recordsPerPage') | raw }}
 ```
-Note that as this method is not using a tag, you would need to call the `optimumfireEvent` method in order to inject the script which sends the event data to GA4.
-
+ > **_NOTE:_** as this method is not using a tag, you would need to call the `optimumfireEvent` method in order to inject the script which sends the event data to GA4.
+ 
+> **_NOTE:_** The `optimumFireEvent` method must be called AFTER `optimumGetVariant`, as the former sets the variant.
 #### 3. Test your variants
 Now that everything is set up, the plugin will randomize a variant and persist it in a cookie, to keep the experience consistent per-user.
 You can test your variants (and the original) by adding a `?optimum={variant}` query parameter to your URL.
