@@ -156,7 +156,7 @@ class Experiment extends Element
     }
 
     /**
- * @return array
+     * @return array
      */
     protected static function defineTableAttributes(): array
     {
@@ -164,7 +164,7 @@ class Experiment extends Element
             'enabled' => \Craft::t('app', 'Enabled?'),
             'startAt' => \Craft::t('app', 'Start date'),
             'endAt' => \Craft::t('app', 'End date'),
-            'duration'=>\Craft::t('app', 'Duration')
+            'duration' => \Craft::t('app', 'Duration')
         ];
     }
 

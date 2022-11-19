@@ -115,7 +115,8 @@ The last piece of the puzzle is telling GA4 to aggregate the events sent from yo
 4. Click "Save"
 
 ------
-All Done! Once GA has collected enough data, you can start comparing the performance of the different cohorts/test groups.
+All Done! Once GA has collected enough data, you can start comparing the performance of the different cohorts/test groups:
+![custom-dimension](https://user-images.githubusercontent.com/1510460/202857414-1802f590-8550-4ba3-b71d-2167aa0b0140.png)
 
 ### Troubleshooting
 Before opening an issue please make sure that:
