@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 1.1.0 - 2023-07-11
+### Improved
+- Allow multiple experiments on the same page
+
 ## 1.0.2 - 2022-11-18
 ### Updated
 - Remove delete button from original variant row
