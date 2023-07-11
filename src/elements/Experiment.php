@@ -21,7 +21,8 @@ class Experiment extends Element
     public function rules(): array
     {
         return [
-            [['name', 'handle', 'endAt'], 'required']
+            [['name', 'handle', 'endAt'], 'required'],
+            [['handle'], 'match','pattern'=>'/^[a-zA-Z0-9_]+$/']
         ];
     }
 

@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 1.1.1 - 2023-07-11
+### Added
+- Validate handle. Only allow alphanumeric + underscore
+
 ## 1.1.0 - 2023-07-11
 ### Improved
 - Allow multiple experiments on the same page
