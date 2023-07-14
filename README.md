@@ -113,8 +113,9 @@ The last piece of the puzzle is telling GA4 to aggregate the events sent from yo
     - **Scope** : Event 
     - **Event parameter** :  Experiment handle (e.g `bannerType`). 
 4. Click "Save"
-
 ------
+![Screenshot 2023-07-14 094539](https://github.com/matfish2/craft-activity-log/assets/1510460/f56e17d4-7c4e-4f72-b6d6-541c4882c228)
+![Screenshot 2023-07-14 094522](https://github.com/matfish2/craft-activity-log/assets/1510460/8e7902c4-ac97-456d-84f2-ed208de39eab)
 All Done! Once GA has collected enough data, you can start comparing the performance of the different cohorts/test groups:
 
 ![custom-dimension](https://user-images.githubusercontent.com/1510460/202857414-1802f590-8550-4ba3-b71d-2167aa0b0140.png)
