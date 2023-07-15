@@ -32,14 +32,14 @@ php craft plugin/install optimum
 Click on the new "Experiments" menu item and then click on "New Experiment".
 An experiment consists of the following fields:
 - **Name** E.g 'Banner Types'
-- **Handle** - E.g `bannerTypes`.  This will be used in two places:
+- **Handle** - E.g `bannerTypes`. This will be used in two places:
   1. In naming the folder for the variants' templates.
   2. As the param name, when setting up GA4's custom dimension 
 - **Enabled?** - Whether the experiment is currently active. This can be used to pause or permanently stop the experiment
 - **Variants** - The different variants for the experiment. E.g if you are testing different hero banners you would set their reference here. An "original" variant is pre-set and refers to the control group, represented by your current code. Its handle cannot be modified, and it cannot be deleted.
     Each variant comprises three fields:
   - Name: Human readable name. This will be sent to GA4 as the value (E.g "Wide Banner")
-  - Handle: Used for naming the variant template in twig (E.g "wideBanner)
+  - Handle: Used for naming the variant template in twig (E.g "wideBanner")
   - Weight: Relative weight (probability) in percents (e.g 40). The sum of all variants' weight must add up to 100%
 - **Starts at**: Optional field to defer the experiment. If left empty experiment starts immediately (assuming that "Enabled?" is on).
 - **Ends at**: Set to 30 days in the future by default.
