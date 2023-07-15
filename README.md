@@ -115,7 +115,9 @@ The last piece of the puzzle is telling GA4 to aggregate the events sent from yo
 4. Click "Save"
 ------
 ![Screenshot 2023-07-14 094539](https://github.com/matfish2/craft-activity-log/assets/1510460/f56e17d4-7c4e-4f72-b6d6-541c4882c228)
+
 Et voila:
+
 ![Screenshot 2023-07-14 094522](https://github.com/matfish2/craft-activity-log/assets/1510460/8e7902c4-ac97-456d-84f2-ed208de39eab)
 All Done! Once GA has collected enough data, you can start comparing the performance of the different cohorts/test groups:
 
