@@ -66,6 +66,7 @@ Inside the template paste the code for the variation you wish to test. E.g:
    // Wide Banner Variant Code
    <img src="wide_banner.jpg" class="wide-banner"/>  
 ```
+> **_NOTE:_**  Don't include the variant templates in your main template code. Optimum will automagically load the correct template at runtime. 
 ##### Method B: Explicit Variant Declaration
 
 While method A is useful when you want to switch components, sometimes you may wish to switch the location of the component on the page (e.g Test different CTAs positions).
