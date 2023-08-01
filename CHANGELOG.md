@@ -1,5 +1,8 @@
 # Release Notes for Optimum
 
+## 1.1.2 - 2023-08-01
+- Slight Clean up and refactor of token parser
+
 ## 1.1.1 - 2023-07-11
 ### Added
 - Validate handle. Only allow alphanumeric + underscore

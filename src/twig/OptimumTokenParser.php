@@ -10,7 +10,6 @@ class OptimumTokenParser extends AbstractTokenParser
 {
     public function parse(Token $token): OptimumNode
     {
-        \Yii::debug('Parsing token for optimum node');
         $lineno = $token->getLine();
 
         $stream = $this->parser->getStream();
@@ -27,13 +26,10 @@ class OptimumTokenParser extends AbstractTokenParser
             // as: {% mytag %}, {% nextmytag %}, {% endmytag %}.
             $tag = $stream->next()->getValue();
 
-            switch ($tag) {
-                case 'endoptimum':
-                    $continue = false;
-                    break;
-                default:
-                    throw new SyntaxError(sprintf('Unexpected end of template. Twig was looking for the following tags "endoptimum" to close the "optimum" block started at line %d)', $lineno), -1);
-            }
+            $continue = match ($tag) {
+                'endoptimum' => false,
+                default => throw new SyntaxError(sprintf('Unexpected end of template. Twig was looking for the following tags "endoptimum" to close the "optimum" block started at line %d)', $lineno), -1),
+            };
 
             // you want $body at the beginning of your arguments
             array_unshift($params, $body);
@@ -54,12 +50,12 @@ class OptimumTokenParser extends AbstractTokenParser
      * @param Token $token
      * @return bool
      */
-    public function decideMyTagFork(Token $token)
+    public function decideMyTagFork(Token $token) : bool
     {
         return $token->test(['endoptimum']);
     }
 
-    public function getTag()
+    public function getTag() : string
     {
         return 'optimum';
     }
@@ -67,7 +63,7 @@ class OptimumTokenParser extends AbstractTokenParser
     /**
      * @throws SyntaxError
      */
-    private function getInlineParams()
+    private function getInlineParams() : array
     {
         $stream = $this->parser->getStream();
         $params = array();
