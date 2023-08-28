@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 1.1.3 - 2023-08-28
+- Added datetime validation [(#2)](https://github.com/matfish2/craft-optimum/issues/2)
+- Fixed issue which occurred when variants failed validation
+
 ## 1.1.2 - 2023-08-01
 - Slight Clean up and refactor of token parser
 

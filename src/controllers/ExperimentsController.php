@@ -68,7 +68,7 @@ class ExperimentsController extends \craft\web\Controller
 
         $this->experiment = $experimentId ? Experiment::findOne($experimentId) : new Experiment();
 
-        if (!$this->experiment) {
+        if ($experimentId && !$this->experiment) {
             $this->setFailFlash(Craft::t('optimum', 'Experiment id not found'));
             return null;
         }
@@ -102,10 +102,15 @@ class ExperimentsController extends \craft\web\Controller
         if (count($varErrors) > 0) {
             $this->setFailFlash(Craft::t('optimum', 'Failed to save experiment variants'));
 
-            ExperimentRecord::findOne($this->experiment->id)->delete();
 
             foreach ($varErrors as $error) {
                 $this->experiment->addError('variants', $error);
+            }
+
+            // If new experiment delete experiment
+            if (!$experimentId) {
+                ExperimentRecord::findOne($this->experiment->id)->delete();
+                $this->experiment->id = null;
             }
 
             // Send the event back to the edit action
