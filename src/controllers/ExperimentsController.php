@@ -1,6 +1,7 @@
 <?php namespace matfish\Optimum\controllers;
 
 use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Craft;
 use craft\errors\ElementNotFoundException;
 use craft\web\View;
@@ -69,6 +70,16 @@ class ExperimentsController extends \craft\web\Controller
 
         if (!$this->experiment) {
             $this->setFailFlash(Craft::t('optimum', 'Experiment id not found'));
+            return null;
+        }
+
+        if ($invalidDatesMessage = $this->validateDates((bool)$experimentId)) {
+            $this->setFailFlash(Craft::t('optimum', $invalidDatesMessage));
+
+            Craft::$app->urlManager->setRouteParams([
+                'experiment' => $this->experiment
+            ]);
+
             return null;
         }
 
@@ -209,6 +220,44 @@ class ExperimentsController extends \craft\web\Controller
         \matfish\Optimum\records\Variant::deleteAll("experimentId={$this->experiment->id} AND id NOT IN ({$newIds})");
 
         return $errors;
+    }
+
+    private function validateDates($isEdit): ?string
+    {
+        $values = Craft::$app->request->getBodyParams();
+        $dates = [];
+
+        foreach (['startAt', 'endAt'] as $key) {
+            $value = $values[$key];
+
+            if (!$value['date']) {
+                continue;
+            }
+
+            try {
+                Carbon::parse($value['date']);
+            } catch (InvalidFormatException $e) {
+                return "Invalid date format {$value['date']}. Date must be in m/d/Y format";
+            }
+
+            try {
+                Carbon::parse($value['time']);
+            } catch (InvalidFormatException $e) {
+                return "Invalid time format {$value['time']}. Time must be in 12hrs followed by AM/PM";
+            }
+
+            $dates[$key] = Carbon::parse($value['date'] . ' ' . $value['time']);
+        }
+
+        if (isset($dates['startAt']) && $dates['startAt'] > $dates['endAt']) {
+            return 'Start date cannot be later than end date';
+        }
+
+        if (!$isEdit && $dates['endAt'] < Carbon::now()) {
+            return 'End date must be greater than now';
+        }
+
+        return null;
     }
 
 
