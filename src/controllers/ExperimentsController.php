@@ -72,9 +72,14 @@ class ExperimentsController extends \craft\web\Controller
             $this->setFailFlash(Craft::t('optimum', 'Experiment id not found'));
             return null;
         }
+        $dateErrors = $this->validateDates((bool)$experimentId);
 
-        if ($invalidDatesMessage = $this->validateDates((bool)$experimentId)) {
-            $this->setFailFlash(Craft::t('optimum', $invalidDatesMessage));
+        if (count($dateErrors) > 0) {
+            $this->setFailFlash(Craft::t('optimum', 'Invalid date(s)'));
+
+            foreach ($dateErrors as $key => $error) {
+                $this->experiment->addError($key, $error);
+            }
 
             Craft::$app->urlManager->setRouteParams([
                 'experiment' => $this->experiment
@@ -227,10 +232,11 @@ class ExperimentsController extends \craft\web\Controller
         return $errors;
     }
 
-    private function validateDates($isEdit): ?string
+    private function validateDates($isEdit): array
     {
         $values = Craft::$app->request->getBodyParams();
         $dates = [];
+        $errors = [];
 
         foreach (['startAt', 'endAt'] as $key) {
             $value = $values[$key];
@@ -242,27 +248,30 @@ class ExperimentsController extends \craft\web\Controller
             try {
                 Carbon::parse($value['date']);
             } catch (InvalidFormatException $e) {
-                return "Invalid date format {$value['date']}. Date must be in m/d/Y format";
+                $errors[$key] = "Invalid date format {$value['date']}. Date must be in mm/dd/yyyy format";
             }
 
             try {
                 Carbon::parse($value['time']);
             } catch (InvalidFormatException $e) {
-                return "Invalid time format {$value['time']}. Time must be in 12hrs followed by AM/PM";
+                $errors[$key] = "Invalid time format {$value['time']}. Time must be in 12hrs followed by AM/PM";
             }
 
-            $dates[$key] = Carbon::parse($value['date'] . ' ' . $value['time']);
+            if (!isset($errors[$key])) {
+                $dates[$key] = Carbon::parse($value['date'] . ' ' . $value['time']);
+            }
+
         }
 
-        if (isset($dates['startAt']) && $dates['startAt'] > $dates['endAt']) {
-            return 'Start date cannot be later than end date';
+        if (isset($dates['startAt'], $dates['endAt']) && $dates['startAt'] > $dates['endAt']) {
+            $errors['startAt'] = 'Start date cannot be later than end date';
         }
 
-        if (!$isEdit && $dates['endAt'] < Carbon::now()) {
-            return 'End date must be greater than now';
+        if (!$isEdit && isset($dates['endAt']) && $dates['endAt'] < Carbon::now()) {
+            $errors['endAt'] = 'End date must be greater than now';
         }
 
-        return null;
+        return $errors;
     }
 
 
