@@ -97,16 +97,6 @@
         value: experiment.endAt ?? defaultEndAt,
         errors: experiment.getErrors('endAt')
     }) }}
-    {% if (experiment.getErrors('startAt') or experiment.getErrors('endAt')) %}
-        <hr>
-        <p>Date rules:
-        <ol>
-            <li>Dates must be in mm/dd/yyyy format (e.g 08/23/2023, NOT 23/08/2023)</li>
-            <li>Time must be in 12hrs format + AM/PM. E.g 1:45 AM</li>
-            <li>End date must be greater than now, unless you are editing an existing experiment</li>
-            <li>End date must be greater than start date, if start date is specified</li>
-        </ol>
-    {% endif %}
 {% endblock %}
 
 {% js %}

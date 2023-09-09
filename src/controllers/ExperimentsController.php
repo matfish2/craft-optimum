@@ -1,10 +1,11 @@
 <?php namespace matfish\Optimum\controllers;
 
-use Carbon\Carbon;
-use Carbon\Exceptions\InvalidFormatException;
 use Craft;
 use craft\errors\ElementNotFoundException;
+use craft\helpers\DateTimeHelper;
 use craft\web\View;
+use DateInterval;
+use DateTime;
 use matfish\Optimum\elements\Experiment;
 use matfish\Optimum\elements\Variant;
 use matfish\Optimum\records\Experiment as ExperimentRecord;
@@ -46,7 +47,7 @@ class ExperimentsController extends \craft\web\Controller
         $data = [
             'experiment' => $experiment,
             'variants' => $variants,
-            'defaultEndAt' => Carbon::now()->addDays(30)
+            'defaultEndAt' => (new DateTime())->add(new DateInterval('P30D'))
         ];
 
         return $this->renderTemplate('optimum/_edit', $data, View::TEMPLATE_MODE_CP);
@@ -153,7 +154,7 @@ class ExperimentsController extends \craft\web\Controller
                 $value = (int)$value;
             } elseif ($type === 'datetime') {
                 if ($value['date']) {
-                    $value = Carbon::parse($value['date'] . ' ' . $value['time']);
+                    $value = DateTimeHelper::toDateTime($value)->format('Y-m-d H:i:s');
                 } else {
                     $value = null;
                 }
@@ -235,7 +236,6 @@ class ExperimentsController extends \craft\web\Controller
     private function validateDates($isEdit): array
     {
         $values = Craft::$app->request->getBodyParams();
-        $dates = [];
         $errors = [];
 
         foreach (['startAt', 'endAt'] as $key) {
@@ -245,29 +245,18 @@ class ExperimentsController extends \craft\web\Controller
                 continue;
             }
 
-            try {
-                Carbon::parse($value['date']);
-            } catch (InvalidFormatException $e) {
-                $errors[$key] = "Invalid date format {$value['date']}. Date must be in mm/dd/yyyy format";
-            }
+            $dates[$key] = DateTimeHelper::toDateTime($value);
 
-            try {
-                Carbon::parse($value['time']);
-            } catch (InvalidFormatException $e) {
-                $errors[$key] = "Invalid time format {$value['time']}. Time must be in 12hrs followed by AM/PM";
+            if (!$dates[$key]) {
+                $errors[$key] = "Invalid date time format";
             }
-
-            if (!isset($errors[$key])) {
-                $dates[$key] = Carbon::parse($value['date'] . ' ' . $value['time']);
-            }
-
         }
 
         if (isset($dates['startAt'], $dates['endAt']) && $dates['startAt'] > $dates['endAt']) {
             $errors['startAt'] = 'Start date cannot be later than end date';
         }
 
-        if (!$isEdit && isset($dates['endAt']) && $dates['endAt'] < Carbon::now()) {
+        if (!$isEdit && isset($dates['endAt']) && $dates['endAt'] < new DateTime()) {
             $errors['endAt'] = 'End date must be greater than now';
         }
 

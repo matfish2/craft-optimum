@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 1.2.0 - 2023-09-09
+### Fixed
+-  Ensure datetime consistency [(#2)](https://github.com/matfish2/craft-optimum/issues/2#issuecomment-1711444522)
+
 ## 1.1.4 - 2023-08-28
 - Improve date validation
 - Add clear date rules explanation if validation fails
