@@ -18,7 +18,7 @@ class Install extends Migration
                 'handle' => $this->string()->notNull()->unique(), // = GA4 custom dimension name (e.g cta_button)
                 'startAt' => $this->dateTime()->null(),
                 'endAt' => $this->dateTime()->null(),
-                'enabled' => $this->boolean()->defaultValue(0),
+                'enabled' => $this->boolean()->defaultValue(false),
                 'dateCreated' => $this->timestamp(),
                 'dateUpdated' => $this->timestamp()
             ]);

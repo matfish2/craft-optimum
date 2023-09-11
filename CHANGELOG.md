@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 1.2.1 - 2023-09-11
+### Fixed
+- Fix Install migration: invalid `enabled` default value [(#3)](https://github.com/matfish2/craft-optimum/issues/3)
+
 ## 1.2.0 - 2023-09-09
 ### Fixed
 -  Ensure datetime consistency [(#2)](https://github.com/matfish2/craft-optimum/issues/2#issuecomment-1711444522)
