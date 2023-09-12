@@ -61,12 +61,13 @@ E.g:
  - `_optimum/bannerType/wideBanner.twig`
  - `_optimum/bannerType/narrowBanner.twig`
 
-Inside the template paste the code for the variation you wish to test. E.g:
+Inside each template paste the code for the variation you wish to test. E.g:
 ```html
    // Wide Banner Variant Code
    <img src="wide_banner.jpg" class="wide-banner"/>  
 ```
 > **_NOTE:_**  Don't include the variant templates in your main template code. Optimum will automagically load the correct template at runtime. 
+
 ##### Method B: Explicit Variant Declaration
 
 While method A is useful when you want to switch components, sometimes you may wish to switch the location of the component on the page (e.g Test different CTAs positions).
@@ -87,6 +88,7 @@ E.g:
 {% endoptimum %}
 ```
 The plugin will only compile the relevant variant.
+
 ##### Method C: Get only variant value 
 In some cases there is no need to create multiple templates, as the value of the random variant can replace a constant in the code.
 E.g, Suppose you have a blog and want to test different per-page values. Here is an example implementation for a hypothetical ([or is it?](https://www.craftcmsplugins.com/blog/index)) `recordsPerPage` experiment:
@@ -97,7 +99,7 @@ E.g, Suppose you have a blog and want to test different per-page values. Here is
 // Pagination code
 {{ optimumFireEvent('recordsPerPage') | raw }}
 ```
- > **_NOTE:_** as this method is not using a tag, you would need to call the `optimumfireEvent` method in order to inject the script which sends the event data to GA4.
+ > **_NOTE:_** as this method is not using a tag, you would need to call the `optimumFireEvent` method in order to inject the script which sends the event data to GA4.
  
 > **_NOTE:_** The `optimumFireEvent` method must be called AFTER `optimumGetVariant`, as the former sets the variant.
 #### 3. Test your variants
@@ -130,9 +132,10 @@ Before opening an issue please make sure that:
 2. Caching is disabled on the testable page (e.g Blitz), as plugin decides in real-time which variant to serve.
 3. GTM is installed on the page (type `gtag` in the console to verify).
 4. If you edit an existing experiment (It is recommended not to do so once it has gone live), you need to delete the template cache, so it will recompile with the fresh details.
+
 ### Caveats
 
-- Note that the code inside the `optimum` tag is scoped. So variables defined inside the tag block containing the original variation (or in the variant templates) will not be available externally.
+- Code inside the `optimum` tag is scoped. Variables defined inside the block containing the original variation (or in the variant templates) will not be available externally.
 
 ### Local Development
 When developing locally you are likely not going to have `gtag` installed, which will result in the following console error:
@@ -142,7 +145,7 @@ Uncaught ReferenceError: gtag is not defined
 
 While there is no issue with ignoring this for development, for the sake of completion, and to see what arguments are being sent to GA, you may want to add a fake `gtag` function in your `<head>` section:
 ```twig  
-{% if (getenv('ENVIRONMENT') is same as ('dev')) %}
+{% if (getenv('CRAFT_ENVIRONMENT') is same as ('dev')) %}
   <script>
       function gtag() {
         console.log(arguments)
