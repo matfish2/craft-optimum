@@ -6,6 +6,8 @@ use craft\base\Element;
 
 class Variant extends Element
 {
+    public bool $hardDelete = true;
+
     public int $experimentId;
     public string $name;
     public string $handle;

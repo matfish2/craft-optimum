@@ -13,6 +13,8 @@ use matfish\Optimum\records\Experiment as ExperimentRecord;
 class Experiment extends Element
 {
 
+    public bool $hardDelete = true;
+
     public ?string $name = null;
     public ?string $handle = null;
     public bool $enabled = true;
