@@ -3,8 +3,6 @@
 namespace matfish\Optimum;
 
 use craft\base\Element;
-use craft\db\ActiveRecord;
-use craft\db\Table;
 use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\Db;
 use craft\helpers\UrlHelper;
@@ -13,10 +11,8 @@ use matfish\Optimum\models\Settings;
 use craft\base\Plugin as BasePlugin;
 use Craft;
 use matfish\Optimum\elements\Experiment;
-use matfish\Optimum\records\Experiment as ExperimentRecord;
 use matfish\Optimum\twig\OptimumExtension;
 use yii\base\Event;
-use yii\db\BaseActiveRecord;
 
 class Plugin extends BasePlugin
 {
