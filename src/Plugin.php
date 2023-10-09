@@ -2,14 +2,21 @@
 
 namespace matfish\Optimum;
 
+use craft\base\Element;
+use craft\db\ActiveRecord;
+use craft\db\Table;
 use craft\events\RegisterUrlRulesEvent;
+use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use craft\web\UrlManager;
 use matfish\Optimum\models\Settings;
 use craft\base\Plugin as BasePlugin;
 use Craft;
+use matfish\Optimum\elements\Experiment;
+use matfish\Optimum\records\Experiment as ExperimentRecord;
 use matfish\Optimum\twig\OptimumExtension;
 use yii\base\Event;
+use yii\db\BaseActiveRecord;
 
 class Plugin extends BasePlugin
 {
@@ -22,6 +29,7 @@ class Plugin extends BasePlugin
 
         $this->registerTwigExtension();
         $this->registerEditRoutes();
+        $this->registerAfterDeleteEvent();
 
         if (Craft::$app->request->isCpRequest) {
             $this->controllerNamespace = 'matfish\\Optimum\\controllers';
@@ -85,5 +93,24 @@ class Plugin extends BasePlugin
         $item['label'] = 'Experiments';
 
         return $item;
+    }
+
+    private function registerAfterDeleteEvent(): void
+    {
+        Event::on(
+            Experiment::class,
+            Element::EVENT_AFTER_DELETE,
+            static function ($event) {
+                $element = $event->sender;
+
+                Db::delete('{{%optimum_experiments}}', [
+                    'id' => $element->id,
+                ]);
+
+                Db::delete('{{%optimum_experiment_variants}}', [
+                    'experimentId' => $element->id,
+                ]);
+            }
+        );
     }
 }
