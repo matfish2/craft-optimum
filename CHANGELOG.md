@@ -1,5 +1,10 @@
 # Release Notes for Optimum
 
+## 1.2.2 - 2023-10-09
+- Validate Unique Name and Handle [(#4)](https://github.com/matfish2/craft-optimum/issues/4)
+- Hard Delete Experiment Element[(#4)](https://github.com/matfish2/craft-optimum/issues/4)
+- Cascade delete to plugin tables[(#4)](https://github.com/matfish2/craft-optimum/issues/4)
+
 ## 1.2.1 - 2023-09-11
 ### Fixed
 - Fix Install migration: invalid `enabled` default value [(#3)](https://github.com/matfish2/craft-optimum/issues/3)
