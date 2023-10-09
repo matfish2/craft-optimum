@@ -8,6 +8,7 @@ use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
 use craft\helpers\UrlHelper;
 use matfish\Optimum\actions\DeleteAction;
+use matfish\Optimum\records\Experiment as ExperimentRecord;
 
 class Experiment extends Element
 {
@@ -22,7 +23,25 @@ class Experiment extends Element
     {
         return [
             [['name', 'handle', 'endAt'], 'required'],
-            [['handle'], 'match','pattern'=>'/^[a-zA-Z0-9_]+$/']
+            [['handle'],
+                'unique',
+                'targetClass' => ExperimentRecord::class,
+                'filter' => function ($query) {
+                    if ($this->id !== null) {
+                        $query->andWhere('`id` != :id', ['id' => $this->id]);
+                    }
+                }
+            ],
+            [['name'],
+                'unique',
+                'targetClass' => ExperimentRecord::class,
+                'filter' => function ($query) {
+                    if ($this->id !== null) {
+                        $query->andWhere('`id` != :id', ['id' => $this->id]);
+                    }
+                }
+            ],
+            [['handle'], 'match', 'pattern' => '/^[a-zA-Z0-9_]+$/']
         ];
     }
 
