@@ -19,8 +19,8 @@ class Install extends Migration
                 'startAt' => $this->dateTime()->null(),
                 'endAt' => $this->dateTime()->null(),
                 'enabled' => $this->boolean()->defaultValue(false),
-                'dateCreated' => $this->timestamp(),
-                'dateUpdated' => $this->timestamp()
+                'dateCreated' => $this->dateTime(),
+                'dateUpdated' => $this->dateTime()
             ]);
         }
 
@@ -32,8 +32,8 @@ class Install extends Migration
                 'handle' => $this->string()->notNull(), // Used as template name
                 'description' => $this->string()->null(),
                 'weight' => $this->smallInteger()->notNull(), // in percents
-                'dateCreated' => $this->timestamp(),
-                'dateUpdated' => $this->timestamp()
+                'dateCreated' => $this->dateTime(),
+                'dateUpdated' => $this->dateTime()
             ]);
         }
     }
