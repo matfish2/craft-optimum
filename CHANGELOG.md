@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 1.3.0 - 2024-01-26
+### Fixed
+- Install Migration: Use dateTime()->notNull() instead of timestamp() [(#6)](https://github.com/matfish2/craft-optimum/issues/6)
+
 ## 1.2.2 - 2023-10-09
 - Validate Unique Name and Handle [(#4)](https://github.com/matfish2/craft-optimum/issues/4)
 - Hard Delete Experiment Element[(#4)](https://github.com/matfish2/craft-optimum/issues/4)
