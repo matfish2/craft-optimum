@@ -12,7 +12,7 @@ You then have the full power of analytics to compare the test groups over differ
 2. A Google Analytics 4 (GA4) Account. 
 3. Google Tag Manager script installed on the page (type `gtag` in the browser console to verify).
 
-> **_NOTE:_** While the last two points are not crucial for development, for the sake of completion it is recommended to create a fake `gtag` [function](#local-development) 
+> **_NOTE:_** While the last two points are not crucial for development, for the sake of completion it is recommended to create a dummy `gtag` [function](#local-development) 
 ### Installation
 
 1. Include the package:
@@ -70,7 +70,7 @@ Inside each template paste the code for the variation you wish to test. E.g:
 
 ##### Method B: Explicit Variant Declaration
 
-While method A is useful when you want to switch components, sometimes you may wish to switch the location of the component on the page (e.g Test different CTAs positions).
+While method A is useful when you want to switch components, sometimes you may wish to switch the *location* of the component on the page (e.g Test different CTAs positions).
 With method B, you can declare multiple `optimum` blocks with the second parameter being the variant:
 
 E.g:
@@ -143,7 +143,7 @@ When developing locally you are likely not going to have `gtag` installed, which
 Uncaught ReferenceError: gtag is not defined
 ```
 
-While there is no issue with ignoring this for development, for the sake of completion, and to see what arguments are being sent to GA, you may want to add a fake `gtag` function in your `<head>` section:
+While there is no issue with ignoring this for development, for the sake of completion, and to see what arguments are being sent to GA, you may want to add a dummy `gtag` function in your `<head>` section:
 ```twig  
 {% if (getenv('CRAFT_ENVIRONMENT') is same as ('dev')) %}
   <script>
