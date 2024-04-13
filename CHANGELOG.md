@@ -1,5 +1,8 @@
 # Release Notes for Optimum
 
+## 2.0.0 - 2024-04-13
+- Craft 5: Initial Release
+
 ## 1.3.0 - 2024-01-26
 ### Fixed
 - Install Migration: Use dateTime()->notNull() instead of timestamp() [(#6)](https://github.com/matfish2/craft-optimum/issues/6)

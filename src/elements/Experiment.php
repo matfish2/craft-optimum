@@ -106,7 +106,7 @@ class Experiment extends Element
         parent::afterSave($isNew);
     }
 
-    public function getTableAttributeHtml($attribute): string
+    public function attributeHtml($attribute): string
     {
 
         $enabled = $this->enabled ? 'enabled' : '';
