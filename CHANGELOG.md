@@ -1,5 +1,8 @@
 # Release Notes for Optimum
 
+## 2.0.1 - 2024-05-30
+### Fixed
+- Remove `duration` from sortable columns [(#8)](https://github.com/matfish2/craft-optimum/issues/8)
 ## 2.0.0 - 2024-04-13
 - Craft 5: Initial Release
 

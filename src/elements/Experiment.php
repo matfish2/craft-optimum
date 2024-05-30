@@ -133,6 +133,16 @@ class Experiment extends Element
         return $this[$attribute];
     }
 
+    protected static function defineSortOptions(): array
+    {
+        return [
+            'name' => \Craft::t('app', 'Name'),
+            'startAt' => \Craft::t('app', 'Start date'),
+            'endAt' => \Craft::t('app', 'End date'),
+            'enabled' => \Craft::t('app', 'Enabled?'),
+        ];
+    }
+
     public function cpEditUrl(): ?string
     {
         $path = sprintf('optimum/experiments/%s', $this->id);
