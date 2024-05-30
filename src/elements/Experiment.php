@@ -195,6 +195,16 @@ class Experiment extends Element
         return ['name'];
     }
 
+    protected static function defineSortOptions(): array
+    {
+        return [
+            'id' => \Craft::t('app', 'Name'),
+            'startAt' => \Craft::t('app', 'Start date'),
+            'endAt' => \Craft::t('app', 'End date'),
+            'enabled' => \Craft::t('app', 'Enabled?'),
+        ];
+    }
+
     protected static function defineActions(string $source = null): array
     {
         return [
