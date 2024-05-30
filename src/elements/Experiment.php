@@ -190,6 +190,15 @@ class Experiment extends Element
         ];
     }
 
+    protected static function defineSortOptions(): array
+    {
+        return [
+            'enabled' => \Craft::t('app', 'Enabled?'),
+            'startAt' => \Craft::t('app', 'Start date'),
+            'endAt' => \Craft::t('app', 'End date'),
+        ];
+    }
+
     protected static function defineSearchableAttributes(): array
     {
         return ['name'];

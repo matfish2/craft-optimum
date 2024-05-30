@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 1.3.1 - 2024-05-30
+### Fixed
+- Remove `duration` from sortable columns [(#8)](https://github.com/matfish2/craft-optimum/issues/8)
+
 ## 1.3.0 - 2024-01-26
 ### Fixed
 - Install Migration: Use dateTime()->notNull() instead of timestamp() [(#6)](https://github.com/matfish2/craft-optimum/issues/6)
