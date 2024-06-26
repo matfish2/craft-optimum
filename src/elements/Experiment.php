@@ -30,7 +30,7 @@ class Experiment extends Element
                 'targetClass' => ExperimentRecord::class,
                 'filter' => function ($query) {
                     if ($this->id !== null) {
-                        $query->andWhere('`id` != :id', ['id' => $this->id]);
+                        $query->andWhere('[[id]] != :id', ['id' => $this->id]);
                     }
                 }
             ],
@@ -39,7 +39,7 @@ class Experiment extends Element
                 'targetClass' => ExperimentRecord::class,
                 'filter' => function ($query) {
                     if ($this->id !== null) {
-                        $query->andWhere('`id` != :id', ['id' => $this->id]);
+                        $query->andWhere('[[id]] != :id', ['id' => $this->id]);
                     }
                 }
             ],
