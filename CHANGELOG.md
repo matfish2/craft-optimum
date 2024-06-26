@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 2.0.2 - 2024-06-26
+### Fixed
+- Fix Postgres compatibility issues [(#9)](https://github.com/matfish2/craft-optimum/issues/9)
+
 ## 2.0.1 - 2024-05-30
 ### Fixed
 - Remove `duration` from sortable columns [(#8)](https://github.com/matfish2/craft-optimum/issues/8)

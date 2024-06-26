@@ -228,7 +228,7 @@ class ExperimentsController extends \craft\web\Controller
 
         $newIds = implode(",", $newIds);
 
-        \matfish\Optimum\records\Variant::deleteAll("experimentId={$this->experiment->id} AND id NOT IN ({$newIds})");
+        \matfish\Optimum\records\Variant::deleteAll("[[experimentId]]={$this->experiment->id} AND id NOT IN ({$newIds})");
 
         return $errors;
     }
