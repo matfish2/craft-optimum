@@ -107,7 +107,9 @@ E.g, Suppose you have a blog and want to test different per-page values. Here is
 #### 4. Fire the event
 Send experiment and variant to your tracking platform:
 ```html
+<script>
 {{ optimumFireEvent('bannerTypes') | raw }}
+</script>
 ```
 By default, this will send the event to GA4. e.g:
 ```js
