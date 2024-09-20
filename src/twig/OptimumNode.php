@@ -38,99 +38,25 @@ class OptimumNode extends Node
             throw new \Exception("Optimum: Unknown experiment {$experiment}");
         }
 
-        $vars = [];
-        $varsLookup = [];
-
-        $variants = $e->getVariants()->all();
-
-        foreach ($variants as $variant) {
-            $vars[$variant->handle] = $variant->weight;
-            $varsLookup[$variant->handle] = $variant->name;
-        }
-
-        $funcs = <<<EOT
-if (!function_exists('getOrSet{$experiment}ExperimentCookie')):
-function get{$experiment}RandomWeightedElement(array \$weightedValues): string
-    {
-        \$rand = random_int(1, (int)array_sum(\$weightedValues));
-
-        foreach (\$weightedValues as \$key => \$value) {
-            \$rand -= \$value;
-            if (\$rand <= 0) {
-                return \$key;
-            }
-        }
-
-        throw new \Exception("Optimum: Failed to randomize element");
-    } 
-     function getOrSet{$experiment}ExperimentCookie(\$experiment, \$vars, \$expiry): string
-    {
-        \$testVar = Craft::\$app->request->getParam('optimum');
-        
-        if (\$testVar && in_array(\$testVar, array_keys(\$vars))) {
-            return \$testVar;
-        }
-        
-        \$key = "optimum_{\$experiment}";
-        \$cookie = \Craft::\$app->request->cookies->get(\$key);
-
-        if (\$cookie) {
-            return \$cookie->value;
-        }
-
-        \$randomVariant = get{$experiment}RandomWeightedElement(\$vars);
-
-        // Create cookie object.
-        \$cookie = Craft::createObject([
-            'class' => yii\web\Cookie::class,
-            'name' => \$key,
-            'httpOnly' => true,
-            'value' => \$randomVariant,
-            'expire' => \$expiry,
-        ]);
-
-        Craft::\$app->getResponse()->getCookies()->add(\$cookie);
-
-        return \$randomVariant;
-    }    
-    endif;
-EOT;
-
-        $gaevent = 'echo "<script>gtag(\'event\',\'' . $experiment . '\', {\"' . $experiment . '\":\'" . $' . $experiment . 'variantLookup[$' . $experiment .'variant] . "\'});</script>";';
-        $startCondition = (bool)$e->startAt ? " || \Carbon\Carbon::now() < \Carbon\Carbon::parse('$e->startAt')" : "";
-
         $compiler
             ->addDebugInfo($this);
 
-        if (!function_exists("getOrSet{$experiment}ExperimentCookie")) {
-            $compiler->
-            raw($funcs);
-        }
-
-        $compiler->raw('$' . $experiment . 'variantLookup =')
-            ->repr($varsLookup)
-            ->raw(";\n\n")
-            ->raw('if (!isset($' . $experiment . 'variant)): $' . $experiment . 'variant = getOrSet' . $experiment . 'ExperimentCookie("' . $experiment . '",')
-            ->repr($vars)
-            ->raw(",\Carbon\Carbon::parse('$e->endAt')->unix()); endif;\n\n")
-            ->raw("\$inactive = !$e->enabled || \Carbon\Carbon::now() > \Carbon\Carbon::parse('" . $e->endAt . "') $startCondition; \n\n");
+        $compiler
+            ->raw("\$e{$experiment} = matfish\\Optimum\\records\\Experiment::find()->where(\"handle='{$experiment}'\")->one(); \n")
+            ->raw('if (!isset($' . $experiment . 'variant)): $' . $experiment . "variant = \$e{$experiment}->getOrSetExperimentCookie();")
+            ->raw("endif;\n\n")
+            ->raw("\$active =\$e{$experiment}->isActive();\n\n");
 
         if ($explicitVariant) {
-            // Only fire event once, for original variant
-            if ($explicitVariant === 'original') {
-                $compiler->raw("if (!\$inactive): " . $gaevent . " endif;");
-            }
-
             // Only compile body for original variant when experiment is inactive OR if experiment is active and random variant is the explicit variant
-            $compiler->raw("if ((!\$inactive && \$" . $experiment ."variant==='$explicitVariant') || (\$inactive && '$explicitVariant'==='original')):\n\n")
+            $compiler->raw("if ((!\$active && \$" . $experiment . "variant==='$explicitVariant') || (\$active && '$explicitVariant'==='original')):\n\n")
                 ->subcompile($this->getNode('body'))
                 ->raw("endif;");
         } else {
-            $compiler->raw("if (!\$inactive): " . $gaevent . " endif;")
-                ->raw("if (\$" . $experiment . "variant==='original' || \$inactive):\n\n")
+            $compiler->raw("if (\$" . $experiment . "variant==='original' || !\$active):\n\n")
                 ->subcompile($this->getNode('body'))
                 ->raw("else:")
-                ->raw('$this->loadTemplate("_optimum/' . $experiment . '/{$' . $experiment .'variant}.twig", null,' . $this->getTemplateLine() . ')->display($context);')
+                ->raw('$this->loadTemplate("_optimum/' . $experiment . '/{$' . $experiment . 'variant}.twig", null,' . $this->getTemplateLine() . ')->display($context);')
                 ->raw("endif;");
         }
     }
