@@ -1,5 +1,13 @@
 # Release Notes for Optimum
 
+## 2.1.0 - 2024-09-20
+> [!IMPORTANT]  
+> Breaking Change. If you upgrade to this version, you will need to add an explicit call to `optimumFireEvent` in your twig template. See README.
+### Improved
+- Decouple from Google Analytics. Allow for custom tracking code
+- `fireEvent` must be called manually to track events
+- Refactor: move logic from twig token to Experiment record
+
 ## 2.0.2 - 2024-06-26
 ### Fixed
 - Fix Postgres compatibility issues [(#9)](https://github.com/matfish2/craft-optimum/issues/9)

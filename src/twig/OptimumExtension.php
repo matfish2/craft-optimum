@@ -4,6 +4,7 @@ namespace matfish\Optimum\twig;
 
 use Carbon\Carbon;
 use Craft;
+use matfish\Optimum\Plugin;
 use matfish\Optimum\records\Experiment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -41,9 +42,7 @@ class OptimumExtension extends AbstractExtension
             throw new \Exception("Optimum: Unknown experiment {$experiment}");
         }
 
-        $this->variant =  $this->getOrSetExperimentCookie($e);
-
-        return $this->variant;
+        return $e->getOrSetExperimentCookie();
     }
 
     public function fireEvent(string $experiment): string
@@ -54,9 +53,13 @@ class OptimumExtension extends AbstractExtension
             throw new \Exception("Optimum: Unknown experiment {$experiment}");
         }
 
-        $variant = $e->getVariants()->where("handle='$this->variant'")->one();
+        $variantName = $this->getVariant($experiment);
 
-        return '<script>gtag(\'event\',\'' . $experiment . '\', {"' . $experiment . '":"' . $variant->name . '"});</script>';
+        $variant = $e->getVariants()->where("handle='$variantName'")->one();
+
+        $closure = Plugin::getInstance()?->getSettings()?->fireEvent;
+
+        return $closure($experiment, $variant->name);
     }
 
     /**

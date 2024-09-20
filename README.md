@@ -1,14 +1,20 @@
 ## Craft Optimum
 
+> **_IMPORTANT:_** Version 2.1.0 (Craft 5)/ 1.5.0 (Craft 4) introduces a breaking change. If you upgrade to this version, you will need to [call `optimumFireEvent`](#4-fire-the-event) explicitly in your twig template.
+
 This plugin allows the user to conduct server-side A/B testing in CraftCMS.
 As opposed to client-side testing (e.g using Google Optimize), the test variant is rendered on the server-side, resulting in better UX, performance and enhanced flexibility.
 
-Once an experiment is set the data is automatically sent to Google Analytics 4 as a [custom dimension](https://support.google.com/analytics/answer/10075209).
+Once an experiment is set you can send the data to your tracking platform and start tracking.
+By default, the event is sent for Google Analytics 4 as a [custom dimension](https://support.google.com/analytics/answer/10075209).
 You then have the full power of analytics to compare the test groups over different metrics (e.g conversion, engagement etc.)
+
+If you are using a different analytics platform, you can still use the plugin to conduct the test, by passing a custom `fireEvent` closure.
 
 ### Requirements
 
 1. Craft CMS 4.x or later.
+If using GA to track:
 2. A Google Analytics 4 (GA4) Account. 
 3. Google Tag Manager script installed on the page (type `gtag` in the browser console to verify).
 
@@ -97,17 +103,39 @@ E.g, Suppose you have a blog and want to test different per-page values. Here is
 {% set perPage = variant is same as ('original') ? 6 : 9 %} // Or use a switch statement if you have more than 2 variants
 {% paginate query.limit(perPage) as pageInfo, pageEntries %}
 // Pagination code
-{{ optimumFireEvent('recordsPerPage') | raw }}
 ```
- > **_NOTE:_** as this method is not using a tag, you would need to call the `optimumFireEvent` method in order to inject the script which sends the event data to GA4.
- 
-> **_NOTE:_** The `optimumFireEvent` method must be called AFTER `optimumGetVariant`, as the former sets the variant.
-#### 3. Test your variants
+
+#### 4. Fire the event
+Send experiment and variant to your tracking platform:
+```html
+<script>
+{{ optimumFireEvent('bannerTypes') | raw }}
+</script>
+```
+By default, this will send the event to GA4. e.g:
+```js
+gtag('event','bannerTypes', {'bannerTypes':'Wide Banner'});
+```
+You can modify the tracking code by overriding the `fireEvent` setting:
+1. Create a new file in your config folder called `optimum.php`
+2. Add the following code:
+```php
+return [
+    'fireEvent' => function($experimentHandle, $variantName) {
+        // Your custom tracking code here,e.g:
+        mixpanel.track("$experimentHandle}", {
+            "variant": "$variantName"
+        });
+    }
+];
+```
+
+#### 5. Test your variants
 Now that everything is set up, the plugin will randomize a variant and persist it in a cookie, to keep the experience consistent per-user.
 You can test your variants (and the original) by adding a `?optimum={variant}` query parameter to your URL.
 E.g `?optimum=wideBanner` or `?optimum=original`. The plugin will disregard the parameter if the value does not correspond to one of the variants.
 
-#### 4. Set a Custom Dimension in GA4
+#### 6. Set a Custom Dimension in GA4 (Only if using GA4 for tracking)
 The last piece of the puzzle is telling GA4 to aggregate the events sent from your site into a custom dimension.
 1. Open GA for your property and go to **Configure->Custom Definitions**
 2. Click on the **Create custom dimensions** button
@@ -126,11 +154,13 @@ All Done! Once GA has collected enough data, you can start comparing the perform
 
 ![custom-dimension](https://user-images.githubusercontent.com/1510460/202857414-1802f590-8550-4ba3-b71d-2167aa0b0140.png)
 
+If using a different tracking platform, you will need to set up the tracking accordingly.
+
 ### Troubleshooting
 Before opening an issue please make sure that:
 1. Cookies are enabled 
 2. Caching is disabled on the testable page (e.g Blitz), as plugin decides in real-time which variant to serve.
-3. GTM is installed on the page (type `gtag` in the console to verify).
+3. If using GA4 for tracking: GTM is installed on the page (type `gtag` in the console to verify).
 4. If you edit an existing experiment (It is recommended not to do so once it has gone live), you need to delete the template cache, so it will recompile with the fresh details.
 
 ### Caveats
@@ -138,7 +168,7 @@ Before opening an issue please make sure that:
 - Code inside the `optimum` tag is scoped. Variables defined inside the block containing the original variation (or in the variant templates) will not be available externally.
 
 ### Local Development
-When developing locally you are likely not going to have `gtag` installed, which will result in the following console error:
+When developing locally, if using GA4 tacking code, you are likely not going to have `gtag` installed, which will result in the following console error:
 ```
 Uncaught ReferenceError: gtag is not defined
 ```
@@ -153,6 +183,8 @@ While there is no issue with ignoring this for development, for the sake of comp
    </script>
 {% endif %}
 ```
+You can use the same method to mock other tracking functions.
+
 ### License
 
 You can try Optimum in a development environment for as long as you like. Once your site goes live, you are
