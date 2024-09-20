@@ -49,7 +49,7 @@ class OptimumNode extends Node
 
         if ($explicitVariant) {
             // Only compile body for original variant when experiment is inactive OR if experiment is active and random variant is the explicit variant
-            $compiler->raw("if ((!\$active && \$" . $experiment . "variant==='$explicitVariant') || (\$active && '$explicitVariant'==='original')):\n\n")
+            $compiler->raw("if ((\$active && \$" . $experiment . "variant==='$explicitVariant') || (!\$active && '$explicitVariant'==='original')):\n\n")
                 ->subcompile($this->getNode('body'))
                 ->raw("endif;");
         } else {
