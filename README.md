@@ -116,25 +116,27 @@ By default, this will send the event to GA4. e.g:
 ```js
 gtag('event','bannerTypes', {'bannerTypes':'Wide Banner'});
 ```
-You can modify the tracking code by overriding the `fireEvent` setting:
+You can modify the tracking code by sepcifying a `trackingPlatform` or by overriding the `fireEvent` setting:
 1. Create a new file in your config folder called `optimum.php`
 2. Add the following code:
 ```php
 return [
-    'fireEvent' => function($experiment, $variant) {
+   'trackingPlatform' => 'mixpanel', // currently supports 'mixpanel' and 'ga4'. Default: 'ga4', OR:
+   'fireEvent' => function($experiment, $variant) {
         // Your custom tracking code here,e.g:
-        // https://docs.mixpanel.com/docs/reports/apps/experiments#add-experiments-to-an-implementation
         return <<<EOD
-        mixpanel.track('\$experiment_started', 
+        myCoolPlatform.track('Experiment Started', 
         {
           'Experiment name': $experiment->name, 
           'Variant name': $variant->name
         })
         EOD;
+        // Note that as you have access to the Experiment and Variant objects, you can use either their handle or name in the tracking code.
     }
 ];
 ```
-Note that as you have access to the Experiment and Variant objects, you can use either their handle or name in the tracking code.
+
+If you are using a tracking platform that is not currently supported by Optimum, we encourage you to share your custom tracking code implementation. This will help us expand our support for additional platforms in future updates, benefiting the entire community. Please consider submitting your custom tracking code example to the project repository or reaching out to the maintainer.
 
 #### 5. Test your variants
 Now that everything is set up, the plugin will randomize a variant and persist it in a cookie, to keep the experience consistent per-user.

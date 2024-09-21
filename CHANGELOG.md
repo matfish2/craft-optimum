@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 2.2.1 - 2024-09-21
+### Improved
+- Add `trackingPlatform` config setting (currently supports `mixpanel` and `ga4`)
+
 ## 2.2.0 - 2024-09-21
 ### Improved
 - Pass Experiment and Variant objects to `fireEvent` closure to allow for more complex tracking logic

@@ -9,6 +9,7 @@ use matfish\Optimum\records\Experiment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 use yii\web\Cookie;
+use matfish\Optimum\services\trackingcode\TrackingCodeRetriever;
 
 class OptimumExtension extends AbstractExtension
 {
@@ -57,9 +58,7 @@ class OptimumExtension extends AbstractExtension
 
         $variant = $e->getVariants()->where("handle='$variantName'")->one();
 
-        $closure = Plugin::getInstance()?->getSettings()?->fireEvent;
-
-        return $closure($e, $variant);
+        return (new TrackingCodeRetriever())->getTrackingCode($e, $variant);
     }
 
     /**
