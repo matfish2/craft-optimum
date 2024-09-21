@@ -121,14 +121,20 @@ You can modify the tracking code by overriding the `fireEvent` setting:
 2. Add the following code:
 ```php
 return [
-    'fireEvent' => function($experimentHandle, $variantName) {
+    'fireEvent' => function($experiment, $variant) {
         // Your custom tracking code here,e.g:
-        mixpanel.track("$experimentHandle}", {
-            "variant": "$variantName"
-        });
+        // https://docs.mixpanel.com/docs/reports/apps/experiments#add-experiments-to-an-implementation
+        return <<<EOD
+        mixpanel.track('\$experiment_started', 
+        {
+          'Experiment name': $experiment->name, 
+          'Variant name': $variant->name
+        })
+        EOD;
     }
 ];
 ```
+Note that as you have access to the Experiment and Variant objects, you can use either their handle or name in the tracking code.
 
 #### 5. Test your variants
 Now that everything is set up, the plugin will randomize a variant and persist it in a cookie, to keep the experience consistent per-user.

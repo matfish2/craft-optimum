@@ -1,6 +1,9 @@
 <?php namespace matfish\Optimum\models;
 
+use matfish\Optimum\records\Experiment;
+use matfish\Optimum\records\Variant;
 use craft\base\Model;
+
 
 class Settings extends Model
 {
@@ -9,9 +12,9 @@ class Settings extends Model
     public function __construct()
     {
         parent::__construct();
-        $this->fireEvent = static function ($experiment, $variant) {
+        $this->fireEvent = static function (Experiment $experiment, Variant $variant) {
             return <<<EOD
-gtag('event','$experiment', {'$experiment':'$variant'});
+gtag('event','$experiment->handle', {'$experiment->handle':'$variant->name'});
 EOD;
         };
     }

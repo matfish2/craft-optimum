@@ -59,7 +59,7 @@ class OptimumExtension extends AbstractExtension
 
         $closure = Plugin::getInstance()?->getSettings()?->fireEvent;
 
-        return $closure($experiment, $variant->name);
+        return $closure($e, $variant);
     }
 
     /**
