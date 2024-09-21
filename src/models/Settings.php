@@ -11,7 +11,7 @@ class Settings extends Model
         parent::__construct();
         $this->fireEvent = static function ($experiment, $variant) {
             return <<<EOD
-gtag('event','$experiment', {'$experiment':'$variant'});
+gtag('event','$experiment->handle', {'$experiment->handle':'$variant->name'});
 EOD;
         };
     }
