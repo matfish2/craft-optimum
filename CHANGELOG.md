@@ -1,5 +1,11 @@
 # Release Notes for Optimum
 
+## 1.6.0 - 2024-09-21
+### Improved
+- Pass Experiment and Variant objects to `fireEvent` closure to allow for more complex tracking logic
+### Changed
+- Removed redundant files
+
 ## 1.5.0 - 2024-09-20
 > [!IMPORTANT]  
 > Breaking Change. If you upgrade to this version, you will need to add an explicit call to `optimumFireEvent` in your twig template. See README.
