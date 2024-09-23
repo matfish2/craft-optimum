@@ -1,5 +1,8 @@
 # Release Notes for Optimum
 
+## 1.6.2 - 2024-09-23
+### Fixed
+- Fix Mixpanel tracking code (lowercase)
 ## 1.6.1 - 2024-09-21
 ### Added
 - Added `trackingPlatform` setting 
