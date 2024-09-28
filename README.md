@@ -1,4 +1,17 @@
 ## Craft Optimum
+## Table of Contents
+
+1. [Requirements](#requirements)
+2. [Installation](#installation)
+3. [Usage](#usage)
+   - [1. Create an experiment in the control panel](#1-create-an-experiment-in-the-control-panel)
+   - [2. Create the variants in twig](#2-create-the-variants-in-twig)
+   - [3. Fire the event](#3-fire-the-event)
+   - [4. (If using GA4) Set up Google Analytics 4](#4-set-up-google-analytics-4)
+4. [Local Development](#local-development)
+5. [Custom Event Firing](#custom-event-firing)
+6. [Changelog](#changelog)
+7. [License](#license)
 
 > **_IMPORTANT:_** Version 2.1.0 (Craft 5)/ 1.5.0 (Craft 4) introduces a breaking change. If you upgrade to this version, you will need to [call `optimumFireEvent`](#4-fire-the-event) explicitly in your twig template.
 
@@ -116,13 +129,20 @@ By default, this will send the event to GA4. e.g:
 ```js
 gtag('event','bannerTypes', {'bannerTypes':'Wide Banner'});
 ```
-You can modify the tracking code by sepcifying a `trackingPlatform` or by overriding the `fireEvent` setting:
+You can modify the tracking code by specifying a `trackingPlatform` or by overriding the `fireEvent` setting:
 1. Create a new file in your config folder called `optimum.php`
 2. Add the following code:
 ```php
 return [
-   'trackingPlatform' => 'mixpanel', // currently supports 'mixpanel' and 'ga4'. Default: 'ga4', OR:
-   'fireEvent' => function($experiment, $variant) {
+   'trackingPlatform' => 'mixpanel', // currently supports 'mixpanel' and 'ga4'. Default: 'ga4'  
+];
+```
+Or, if the platform is not supported by Optimum, you can specify a custom function:
+```php
+return [
+   'fireEvent' => function(string $experiment, string $variant) {
+       'fireEvent' => function($experiment, $variant) {
+        // Note that as you have access to the Experiment and Variant objects, you can use either their handle or name in the tracking code.
         // Your custom tracking code here,e.g:
         return <<<EOD
         myCoolPlatform.track('Experiment Started', 
@@ -131,12 +151,12 @@ return [
           'Variant name': $variant->name
         })
         EOD;
-        // Note that as you have access to the Experiment and Variant objects, you can use either their handle or name in the tracking code.
     }
+   }
 ];
-```
+```   
 
-If you are using a tracking platform that is not currently supported by Optimum, we encourage you to share your custom tracking code implementation. This will help us expand our support for additional platforms in future updates, benefiting the entire community. Please consider submitting your custom tracking code example to the project repository or reaching out to the maintainer.
+> **_NOTE:_** If you are using a tracking platform that is not currently supported by Optimum, we encourage you to share your custom tracking code implementation. This will help us expand our support for additional platforms in future updates, benefiting the entire community. Please consider submitting your custom tracking code example to the project repository or reaching out to the maintainer.
 
 #### 5. Test your variants
 Now that everything is set up, the plugin will randomize a variant and persist it in a cookie, to keep the experience consistent per-user.
