@@ -1,17 +1,21 @@
 ## Craft Optimum
+
 ## Table of Contents
 
 1. [Requirements](#requirements)
 2. [Installation](#installation)
 3. [Usage](#usage)
-   - [1. Create an experiment in the control panel](#1-create-an-experiment-in-the-control-panel)
-   - [2. Create the variants in twig](#2-create-the-variants-in-twig)
-   - [3. Fire the event](#3-fire-the-event)
-   - [4. (If using GA4) Set up Google Analytics 4](#4-set-up-google-analytics-4)
-4. [Local Development](#local-development)
-5. [Custom Event Firing](#custom-event-firing)
-6. [Changelog](#changelog)
-7. [License](#license)
+   3.1. [Create an experiment in the control panel](#1-create-an-experiment-in-the-control-panel)
+   3.2. [Create the variants in twig](#2-create-the-variants-in-twig)
+      a. [Polymorphism](#method-a-polymorphism)
+      b. [Explicit Declaration](#method-b-explicit-variant-declaration)
+      c. [Variant value only](#method-c-get-only-variant-value)
+   3.3. [Fire the event](#3-fire-the-event)
+   3.4. [GA4 Setup (If applicable)](#4-how-to-set-a-custom-dimension-in-ga4-only-if-using-ga4-for-tracking)
+5. [Troubleshooting](#troubleshooting)
+6. [Caveats](#caveats)
+7. [Local Development](#local-development)
+8. [License](#license)
 
 > **_IMPORTANT:_** Version 2.1.0 (Craft 5)/ 1.5.0 (Craft 4) introduces a breaking change. If you upgrade to this version, you will need to [call `optimumFireEvent`](#4-fire-the-event) explicitly in your twig template.
 
@@ -118,7 +122,7 @@ E.g, Suppose you have a blog and want to test different per-page values. Here is
 // Pagination code
 ```
 
-#### 4. Fire the event
+#### 3. Fire the event
 Send experiment and variant to your tracking platform:
 ```html
 <script>
@@ -158,12 +162,12 @@ return [
 
 > **_NOTE:_** If you are using a tracking platform that is not currently supported by Optimum, we encourage you to share your custom tracking code implementation. This will help us expand our support for additional platforms in future updates, benefiting the entire community. Please consider submitting your custom tracking code example to the project repository or reaching out to the maintainer.
 
-#### 5. Test your variants
+#### 4. Test your variants
 Now that everything is set up, the plugin will randomize a variant and persist it in a cookie, to keep the experience consistent per-user.
 You can test your variants (and the original) by adding a `?optimum={variant}` query parameter to your URL.
 E.g `?optimum=wideBanner` or `?optimum=original`. The plugin will disregard the parameter if the value does not correspond to one of the variants.
 
-#### 6. Set a Custom Dimension in GA4 (Only if using GA4 for tracking)
+#### How to Set a Custom Dimension in GA4 (Only if using GA4 for tracking)
 The last piece of the puzzle is telling GA4 to aggregate the events sent from your site into a custom dimension.
 1. Open GA for your property and go to **Configure->Custom Definitions**
 2. Click on the **Create custom dimensions** button
