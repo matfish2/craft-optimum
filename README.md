@@ -146,7 +146,6 @@ Or, if the platform is not supported by Optimum, you can specify a custom functi
 ```php
 return [
    'fireEvent' => function(string $experiment, string $variant) {
-       'fireEvent' => function($experiment, $variant) {
         // Note that as you have access to the Experiment and Variant objects, you can use either their handle or name in the tracking code.
         // Your custom tracking code here,e.g:
         return <<<EOD
@@ -156,7 +155,6 @@ return [
           'Variant name': $variant->name
         })
         EOD;
-    }
    }
 ];
 ```   
