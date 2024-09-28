@@ -1,5 +1,16 @@
 ## Craft Optimum
 
+> **_IMPORTANT:_** Version 2.1.0 (Craft 5)/ 1.5.0 (Craft 4) introduces a breaking change. If you upgrade to this version, you will need to [call `optimumFireEvent`](#4-fire-the-event) explicitly in your twig template.
+
+This plugin allows the user to conduct server-side A/B testing in CraftCMS.
+As opposed to client-side testing (e.g using Google Optimize), the test variant is rendered on the server-side, resulting in better UX, performance and enhanced flexibility.
+
+Once an experiment is set you can send the data to your tracking platform and start tracking.
+By default, the event is sent for Google Analytics 4 as a [custom dimension](https://support.google.com/analytics/answer/10075209).
+You then have the full power of analytics to compare the test groups over different metrics (e.g conversion, engagement etc.)
+
+If you are using a different analytics platform, you can still use the plugin to conduct the test, by passing a `trackingPlatform` or a custom `fireEvent` closure (the latter is useful for platforms that are not supported by Optimum).
+
 ## Table of Contents
 
 1. [Requirements](#requirements)
@@ -17,17 +28,6 @@
 6. [Caveats](#caveats)
 7. [Local Development](#local-development)
 8. [License](#license)
-
-> **_IMPORTANT:_** Version 2.1.0 (Craft 5)/ 1.5.0 (Craft 4) introduces a breaking change. If you upgrade to this version, you will need to [call `optimumFireEvent`](#4-fire-the-event) explicitly in your twig template.
-
-This plugin allows the user to conduct server-side A/B testing in CraftCMS.
-As opposed to client-side testing (e.g using Google Optimize), the test variant is rendered on the server-side, resulting in better UX, performance and enhanced flexibility.
-
-Once an experiment is set you can send the data to your tracking platform and start tracking.
-By default, the event is sent for Google Analytics 4 as a [custom dimension](https://support.google.com/analytics/answer/10075209).
-You then have the full power of analytics to compare the test groups over different metrics (e.g conversion, engagement etc.)
-
-If you are using a different analytics platform, you can still use the plugin to conduct the test, by passing a custom `fireEvent` closure.
 
 ### Requirements
 
@@ -166,7 +166,7 @@ Now that everything is set up, the plugin will randomize a variant and persist i
 You can test your variants (and the original) by adding a `?optimum={variant}` query parameter to your URL.
 E.g `?optimum=wideBanner` or `?optimum=original`. The plugin will disregard the parameter if the value does not correspond to one of the variants.
 
-#### Appendix: How to Set a Custom Dimension in GA4 
+### Appendix: How to Set a Custom Dimension in GA4 
 This section assumes you are using the default `ga4` tracking platform.
 For other platforms, please refer to the instructions for your specific tracking platform.
 
