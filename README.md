@@ -31,12 +31,8 @@ If you are using a different analytics platform, you can still use the plugin to
 
 ### Requirements
 
-1. Craft CMS 4.x or later.
-If using GA to track:
-2. A Google Analytics 4 (GA4) Account. 
-3. Google Tag Manager script installed on the page (type `gtag` in the browser console to verify).
+Craft CMS 4.x or later.
 
-> **_NOTE:_** While the last two points are not crucial for development, for the sake of completion it is recommended to create a dummy `gtag` [function](#local-development) 
 ### Installation
 
 1. Include the package:
