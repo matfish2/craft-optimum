@@ -5,13 +5,13 @@
 1. [Requirements](#requirements)
 2. [Installation](#installation)
 3. [Usage](#usage)
-   3.1. [Create an experiment in the control panel](#1-create-an-experiment-in-the-control-panel)
-   3.2. [Create the variants in twig](#2-create-the-variants-in-twig)
+   - 3.1. [Create an experiment in the control panel](#1-create-an-experiment-in-the-control-panel)
+   - 3.2. [Create the variants in twig](#2-create-the-variants-in-twig)
       - [Polymorphism](#method-a-polymorphism)
       - [Explicit Declaration](#method-b-explicit-variant-declaration)
       - [Variant value only](#method-c-get-only-variant-value)
-   3.3. [Fire the event](#3-fire-the-event)
-   3.4. [GA4 Setup (If applicable)](#appendix-how-to-set-a-custom-dimension-in-ga4)
+   - 3.3. [Fire the event](#3-fire-the-event)
+4. [GA4 Setup (If applicable)](#appendix-how-to-set-a-custom-dimension-in-ga4)
 5. [Troubleshooting](#troubleshooting)
 6. [Caveats](#caveats)
 7. [Local Development](#local-development)
@@ -168,7 +168,9 @@ You can test your variants (and the original) by adding a `?optimum={variant}` q
 E.g `?optimum=wideBanner` or `?optimum=original`. The plugin will disregard the parameter if the value does not correspond to one of the variants.
 
 #### Appendix: How to Set a Custom Dimension in GA4 
-The last piece of the puzzle is telling GA4 to aggregate the events sent from your site into a custom dimension.
+This section assumes you are using the default `ga4` tracking platform.
+For other platforms, please refer to the instructions for your specific tracking platform.
+
 1. Open GA for your property and go to **Configure->Custom Definitions**
 2. Click on the **Create custom dimensions** button
 3. In the modal fill in the following details:
