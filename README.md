@@ -11,6 +11,7 @@
       - [Explicit Declaration](#method-b-explicit-variant-declaration)
       - [Variant value only](#method-c-get-only-variant-value)
    - 3.3. [Fire the event](#3-fire-the-event)
+   - 3.4. [Test your variants](#4-test-your-variants)
 4. [GA4 Setup (If applicable)](#appendix-how-to-set-a-custom-dimension-in-ga4)
 5. [Troubleshooting](#troubleshooting)
 6. [Caveats](#caveats)
