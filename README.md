@@ -190,8 +190,6 @@ Before opening an issue please make sure that:
 1. Cookies are enabled 
 2. Caching is disabled on the testable page (e.g Blitz), as plugin decides in real-time which variant to serve.
 3. If using GA4 for tracking: GTM is installed on the page (type `gtag` in the console to verify).
-4. If you edit an existing experiment (It is recommended not to do so once it has gone live), you need to delete the template cache, so it will recompile with the fresh details.
-
 ### Caveats
 
 - Code inside the `optimum` tag is scoped. Variables defined inside the block containing the original variation (or in the variant templates) will not be available externally.
