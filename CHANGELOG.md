@@ -1,8 +1,14 @@
 # Release Notes for Optimum
 
+## 1.6.3 - 2024-10-09
+### Fixed
+- Fixed inactive experiment firing event
+- Fixed inactive experiment variant being returned from explicit call to `optimumGetVariant`
+
 ## 1.6.2 - 2024-09-23
 ### Fixed
 - Fix Mixpanel tracking code (lowercase)
+
 ## 1.6.1 - 2024-09-21
 ### Added
 - Added `trackingPlatform` setting 
