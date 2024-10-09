@@ -18,7 +18,7 @@ class Experiment extends \craft\db\ActiveRecord
         return $this->hasMany(Variant::class, ['experimentId' => 'id']);
     }
 
-       public function isActive(): bool
+    public function isActive(): bool
     {
         return $this->enabled &&
             (!$this->startAt || Carbon::parse($this->startAt) <= Carbon::now()) &&

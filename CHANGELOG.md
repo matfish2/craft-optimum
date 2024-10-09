@@ -1,5 +1,10 @@
 # Release Notes for Optimum
 
+## 2.2.2 - 2024-10-09
+### Fixed
+- When experiment is not active, return original variant instead of not setting the cookie 
+- When experiment is not active, do not fire event
+
 ## 2.2.1 - 2024-09-21
 ### Improved
 - Add `trackingPlatform` config setting (currently supports `mixpanel` and `ga4`)

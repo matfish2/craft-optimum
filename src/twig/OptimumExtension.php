@@ -42,6 +42,9 @@ class OptimumExtension extends AbstractExtension
         if (!$e) {
             throw new \Exception("Optimum: Unknown experiment {$experiment}");
         }
+        if (!$e->isActive()) {
+            return 'original';
+        }
 
         return $e->getOrSetExperimentCookie();
     }
@@ -52,6 +55,10 @@ class OptimumExtension extends AbstractExtension
 
         if (!$e) {
             throw new \Exception("Optimum: Unknown experiment {$experiment}");
+        }
+
+        if (!$e->isActive()) {
+            return '';
         }
 
         $variantName = $this->getVariant($experiment);
