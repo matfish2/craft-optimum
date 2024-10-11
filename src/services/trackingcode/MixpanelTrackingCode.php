@@ -18,8 +18,8 @@ class MixpanelTrackingCode implements TrackingCode
     {
         return <<<EOD
 mixpanel.track('\$experiment_started', {
-    'Experiment Name': '$experiment->handle',
-    'Variant Name': '$variant->name'
+    'Experiment name': '$experiment->handle',
+    'Variant name': '$variant->name'
 });
 EOD;
     }
