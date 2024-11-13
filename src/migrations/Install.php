@@ -19,6 +19,7 @@ class Install extends Migration
                 'startAt' => $this->dateTime()->null(),
                 'endAt' => $this->dateTime()->null(),
                 'enabled' => $this->boolean()->defaultValue(false),
+                'populationSegment' => $this->integer()->notNull()->defaultValue(100),
                 'dateCreated' => $this->dateTime()->notNull(),
                 'dateUpdated' => $this->dateTime()->notNull()
             ]);

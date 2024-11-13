@@ -1,4 +1,6 @@
-<?php namespace matfish\Optimum\controllers;
+<?php
+
+namespace matfish\Optimum\controllers;
 
 use Craft;
 use craft\errors\ElementNotFoundException;
@@ -21,7 +23,8 @@ class ExperimentsController extends \craft\web\Controller
         'handle' => 'string',
         'startAt' => 'datetime',
         'endAt' => 'datetime',
-        'enabled' => 'boolean'
+        'enabled' => 'boolean',
+        'populationSegment' => 'integer'
     ];
 
     public function actionEdit(): \yii\web\Response
@@ -41,7 +44,6 @@ class ExperimentsController extends \craft\web\Controller
             } else {
                 $variants = $exp->getVariants()->all();
             }
-
         }
 
         $data = [
@@ -63,7 +65,7 @@ class ExperimentsController extends \craft\web\Controller
     public function actionSave()
     {
         // Ensure the user has permission to save events
-//        $this->requirePermission('edit-experiment');
+        //        $this->requirePermission('edit-experiment');
 
         $experimentId = $this->request->getBodyParam('experimentId');
 
@@ -262,6 +264,4 @@ class ExperimentsController extends \craft\web\Controller
 
         return $errors;
     }
-
-
 }

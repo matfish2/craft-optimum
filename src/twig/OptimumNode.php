@@ -45,7 +45,7 @@ class OptimumNode extends Node
             ->raw("\$e{$experiment} = matfish\\Optimum\\records\\Experiment::find()->where(\"handle='{$experiment}'\")->one(); \n")
             ->raw('if (!isset($' . $experiment . 'variant)): $' . $experiment . "variant = \$e{$experiment}->getOrSetExperimentCookie();")
             ->raw("endif;\n\n")
-            ->raw("\$active =\$e{$experiment}->isActive();\n\n");
+            ->raw("\$active = \$e{$experiment}->isActive() && \$e{$experiment}->isIncludedInExperiment();\n\n");
 
         if ($explicitVariant) {
             // Only compile body for original variant when experiment is inactive OR if experiment is active and random variant is the explicit variant

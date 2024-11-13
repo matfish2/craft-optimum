@@ -16,6 +16,7 @@ use yii\base\Event;
 
 class Plugin extends BasePlugin
 {
+    public string $schemaVersion = '1.0.1';
     public bool $hasCpSection = true;
     public bool $hasCpSettings = false;
 

@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 2.3.0 - 2024-11-13
+### Improved
+- Added Population Segment support
+
 ## 2.2.3 - 2024-10-11
 ### Fixed
 - Lowercase in mixpanel tracking code

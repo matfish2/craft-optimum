@@ -1,4 +1,3 @@
-{# {% do view.registerAssetBundle('matfish\\Tablecloth\\TableclothCpAssetBundle') %} #}
 {% extends '_layouts/cp' %}
 {% set title = experiment.isNew() ?  ('New Experiment'|t('optimum')) : ('Edit Experiment'|t('optimum')) %}
 {% set fullPageForm = true %}
@@ -8,6 +7,12 @@
 
 
 {% block content %}
+
+<style>
+    #populationSegment {
+        width: 80px;
+    }
+</style>
     {{ actionInput('optimum/experiments/save') }}
     {{ hiddenInput('experimentId', experiment.id) }}
 
@@ -45,6 +50,16 @@
         errors: experiment.getErrors('enabled'),
         autofocus: true,
         required: true
+    }) }}
+
+    {{ forms.textField({
+        label: "Population Segment"|t('app'),
+        instructions: "Optional field to limit the experiment to a specific population segment by percentage. Defaults to 100% of users."|t('app'),
+        id: 'populationSegment',
+        name: 'populationSegment',
+        value: experiment.populationSegment,
+        errors: experiment.getErrors('populationSegment'),
+        type: 'number',
     }) }}
 
     {{ forms.editableTableField({

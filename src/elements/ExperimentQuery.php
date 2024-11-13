@@ -17,7 +17,8 @@ class ExperimentQuery extends ElementQuery
             'optimum_experiments.handle',
             'optimum_experiments.enabled',
             'optimum_experiments.startAt',
-            'optimum_experiments.endAt'
+            'optimum_experiments.endAt',
+            'optimum_experiments.populationSegment'
         ]);
 
         return parent::beforePrepare();

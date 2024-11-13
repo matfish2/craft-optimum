@@ -2,13 +2,9 @@
 
 namespace matfish\Optimum\twig;
 
-use Carbon\Carbon;
-use Craft;
-use matfish\Optimum\Plugin;
 use matfish\Optimum\records\Experiment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
-use yii\web\Cookie;
 use matfish\Optimum\services\trackingcode\TrackingCodeRetriever;
 
 class OptimumExtension extends AbstractExtension
@@ -42,11 +38,11 @@ class OptimumExtension extends AbstractExtension
         if (!$e) {
             throw new \Exception("Optimum: Unknown experiment {$experiment}");
         }
-        if (!$e->isActive()) {
+        if (!$e->isActive() || !$e->isIncludedInExperiment()) {
             return 'original';
         }
 
-        return $e->getOrSetExperimentCookie();
+        return $e->getOrSetExperimentCookie() ?? 'original';
     }
 
     public function fireEvent(string $experiment): string
@@ -57,69 +53,13 @@ class OptimumExtension extends AbstractExtension
             throw new \Exception("Optimum: Unknown experiment {$experiment}");
         }
 
-        if (!$e->isActive()) {
+        if (!$e->isActive() || !$e->isIncludedInExperiment()) {
             return '';
         }
 
         $variantName = $this->getVariant($experiment);
-
         $variant = $e->getVariants()->where("handle='$variantName'")->one();
 
         return (new TrackingCodeRetriever())->getTrackingCode($e, $variant);
-    }
-
-    /**
-     * @throws \Exception
-     */
-    protected function getRandomWeightedElement(array $weightedValues): string
-    {
-        $rand = random_int(1, (int)array_sum($weightedValues));
-
-        foreach ($weightedValues as $key => $value) {
-            $rand -= $value;
-            if ($rand <= 0) {
-                return $key;
-            }
-        }
-
-        throw new \Exception("Optimum: Failed to randomize element");
-    }
-
-    function getOrSetExperimentCookie($experiment): string
-    {
-        $vars = [];
-
-        $variants = $experiment->getVariants()->all();
-
-        foreach ($variants as $variant) {
-            $vars[$variant->handle] = $variant->weight;
-        }
-        $testVar = Craft::$app->request->getParam('optimum');
-
-        if ($testVar && array_key_exists($testVar, $vars)) {
-            return $testVar;
-        }
-
-        $key = "optimum_{$experiment->handle}";
-        $cookie = \Craft::$app->request->cookies->get($key);
-
-        if ($cookie) {
-            return $cookie->value;
-        }
-
-        $randomVariant = $this->getRandomWeightedElement($vars);
-
-        // Create cookie object.
-        $cookie = Craft::createObject([
-            'class' => Cookie::class,
-            'name' => $key,
-            'httpOnly' => true,
-            'value' => $randomVariant,
-            'expire' => Carbon::parse($experiment->endAt)->unix(),
-        ]);
-
-        Craft::$app->getResponse()->getCookies()->add($cookie);
-
-        return $randomVariant;
     }
 }

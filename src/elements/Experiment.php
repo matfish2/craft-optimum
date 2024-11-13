@@ -20,6 +20,7 @@ class Experiment extends Element
     public bool $enabled = true;
     public $startAt = null;
     public $endAt = null;
+    public ?int $populationSegment = 100;
 
     public function rules(): array
     {
@@ -43,7 +44,8 @@ class Experiment extends Element
                     }
                 }
             ],
-            [['handle'], 'match', 'pattern' => '/^[a-zA-Z0-9_]+$/']
+            [['handle'], 'match', 'pattern' => '/^[a-zA-Z0-9_]+$/'],
+            [['populationSegment'], 'integer', 'min' => 0, 'max' => 100]
         ];
     }
 
@@ -238,7 +240,8 @@ class Experiment extends Element
             'handle' => $this->handle,
             'enabled' => $this->enabled,
             'startAt' => $this->startAt,
-            'endAt' => $this->endAt
+            'endAt' => $this->endAt,
+            'populationSegment' => $this->populationSegment
         ];
     }
 
@@ -254,7 +257,8 @@ class Experiment extends Element
             'handle' => $this->handle,
             'enabled' => $this->enabled,
             'startAt' => $this->startAt,
-            'endAt' => $this->endAt
+            'endAt' => $this->endAt,
+            'populationSegment' => $this->populationSegment
         ];
     }
 
