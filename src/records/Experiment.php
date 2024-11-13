@@ -70,10 +70,13 @@ class Experiment extends \craft\db\ActiveRecord
             return $value['variant'];
         }
 
+        if (!$this->isActive()) {
+            return null;
+        }
+
         $shouldInclude = $this->shouldIncludeInExperiment();
         $randomVariant = $shouldInclude ? $this->getRandomWeightedElement() : null;
 
-        // Create cookie object with both variant and inclusion status
         $cookie = Craft::createObject([
             'class' => \yii\web\Cookie::class,
             'name' => $key,
@@ -110,42 +113,48 @@ class Experiment extends \craft\db\ActiveRecord
     {
         try {
             $key = "optimum_{$this->handle}";
-            
-            // First check request cookies
             $cookie = \Craft::$app->request->cookies->get($key);
 
             if (!$cookie) {
-                // If not in request, check response cookies
+                // get from response cookies
                 $cookie = \Craft::$app->response->cookies->get($key);
                 if (!$cookie) {
                     return null;
                 }
             }
 
-            // Handle legacy cookies that only contain variant string
-            if (!str_starts_with($cookie->value, '{')) {
+            // First try to decode as JSON
+            $decoded = json_decode($cookie->value, true);
+            
+            // If it's valid JSON with the expected structure, return it
+            if (is_array($decoded) && isset($decoded['variant'])) {
+                return $decoded;
+            }
+
+            // Check if it's a valid legacy cookie (should be a simple variant string)
+            // Get all valid variant handles for this experiment
+            $validVariants = array_merge(
+                ['original'],
+                array_map(
+                    fn($v) => $v->handle,
+                    $this->getVariants()->all()
+                )
+            );
+
+            // Only treat as legacy if the value exactly matches a valid variant
+            if (in_array($cookie->value, $validVariants, true)) {
                 return [
                     'variant' => $cookie->value,
                     'included' => true // Legacy cookies were always included
                 ];
             }
 
-            $decoded = json_decode($cookie->value, true);
-            if (!is_array($decoded) || !isset($decoded['variant'])) {
-                Craft::warning("Optimum: Malformed cookie value for experiment {$this->handle}", __METHOD__);
-                return [
-                    'variant' => null,
-                    'included' => false
-                ];
-            }
-
-            return $decoded;
+            // If we get here, the cookie is malformed
+            Craft::warning("Optimum: Malformed cookie value for experiment {$this->handle}", __METHOD__);
+            return null;
         } catch (\Throwable $e) {
             Craft::error("Optimum: Error reading cookie for experiment {$this->handle}: " . $e->getMessage(), __METHOD__);
-            return [
-                'variant' => null,
-                'included' => false
-            ];
+            return null;
         }
     }
 }

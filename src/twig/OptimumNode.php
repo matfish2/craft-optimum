@@ -48,12 +48,14 @@ class OptimumNode extends Node
             ->raw("\$active = \$e{$experiment}->isActive() && \$e{$experiment}->isIncludedInExperiment();\n\n");
 
         if ($explicitVariant) {
-            // Only compile body for original variant when experiment is inactive OR if experiment is active and random variant is the explicit variant
-            $compiler->raw("if ((\$active && \$" . $experiment . "variant==='$explicitVariant') || (!\$active && '$explicitVariant'==='original')):\n\n")
+            // Only compile body for original variant when experiment is inactive 
+            // OR if experiment is active and random variant is the explicit variant
+            // OR if the variant doesn't exist (fallback to original)
+            $compiler->raw("if ((\$active && \$" . $experiment . "variant==='$explicitVariant') || (!\$active && '$explicitVariant'==='original') || ('$explicitVariant'==='original' && !\$e{$experiment}->getVariants()->where(\"handle='\$" . $experiment . "variant'\")->exists())):\n\n")
                 ->subcompile($this->getNode('body'))
                 ->raw("endif;");
         } else {
-            $compiler->raw("if (\$" . $experiment . "variant==='original' || !\$active):\n\n")
+            $compiler->raw("if (\$" . $experiment . "variant==='original' || !\$active || !\$e{$experiment}->getVariants()->where(\"handle='\$" . $experiment . "variant'\")->exists()):\n\n")
                 ->subcompile($this->getNode('body'))
                 ->raw("else:")
                 ->raw('$this->loadTemplate("_optimum/' . $experiment . '/{$' . $experiment . 'variant}.twig", null,' . $this->getTemplateLine() . ')->display($context);')

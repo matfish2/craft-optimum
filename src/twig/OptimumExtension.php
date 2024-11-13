@@ -6,6 +6,7 @@ use matfish\Optimum\records\Experiment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 use matfish\Optimum\services\trackingcode\TrackingCodeRetriever;
+use Craft;
 
 class OptimumExtension extends AbstractExtension
 {
@@ -31,18 +32,29 @@ class OptimumExtension extends AbstractExtension
         ];
     }
 
-    public function getVariant(string $experiment): string
+    public function getVariant(string $experiment): string|null
     {
         $e = Experiment::find()->where("handle='$experiment'")->one();
 
         if (!$e) {
             throw new \Exception("Optimum: Unknown experiment {$experiment}");
         }
+
         if (!$e->isActive() || !$e->isIncludedInExperiment()) {
             return 'original';
         }
 
-        return $e->getOrSetExperimentCookie() ?? 'original';
+        $variant = $e->getOrSetExperimentCookie();
+        
+        if ($variant) {
+            $variantExists = $e->getVariants()->where("handle='$variant'")->exists();
+            if (!$variantExists) {
+                Craft::warning("Optimum: Variant {$variant} not found for experiment {$experiment}, falling back to original", __METHOD__);
+                return null;
+            }
+        }
+
+        return $variant;
     }
 
     public function fireEvent(string $experiment): string
@@ -59,6 +71,11 @@ class OptimumExtension extends AbstractExtension
 
         $variantName = $this->getVariant($experiment);
         $variant = $e->getVariants()->where("handle='$variantName'")->one();
+        
+        if (!$variant) {
+            Craft::warning("Optimum: Variant {$variantName} not found for experiment {$experiment}, skipping event", __METHOD__);
+            return '';
+        }
 
         return (new TrackingCodeRetriever())->getTrackingCode($e, $variant);
     }

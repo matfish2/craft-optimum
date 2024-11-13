@@ -1,0 +1,30 @@
+// Set up legacy cookie format
+https://craft5.ddev.site/actions/optimum/test?scenario=legacy&experiment=whatever&variant=copycat1&return=/
+
+// Set up included user with new format
+https://craft5.ddev.site/actions/optimum/test?scenario=included&experiment=whatever&variant=copycat1&return=/
+
+// Set up excluded user
+https://craft5.ddev.site/actions/optimum/test?scenario=excluded&experiment=whatever&variant=copycat1&return=/
+
+// Test malformed cookie handling
+https://craft5.ddev.site/actions/optimum/test?scenario=malformed&experiment=whatever&return=/
+
+// Clear the cookie entirely
+https://craft5.ddev.site/actions/optimum/test?scenario=clear&experiment=whatever&return=/
+
+// Population Segmentation Tests
+// ----------------------------
+
+// Test with 25% population segment (clear cookie and set segment)
+https://craft5.ddev.site/actions/optimum/test?scenario=test-segment&experiment=whatever&segment=25&variant=copycat1&return=/
+
+// Test with 0% segment (everyone should be excluded)
+https://craft5.ddev.site/actions/optimum/test?scenario=test-segment&experiment=whatever&segment=0&return=/
+
+// Test with 100% segment (everyone should be included)
+https://craft5.ddev.site/actions/optimum/test?scenario=test-segment&experiment=whatever&segment=100&variant=copycat1&return=/
+
+// Test with 50% segment (roughly half should be included)
+https://craft5.ddev.site/actions/optimum/test?scenario=test-segment&experiment=whatever&segment=50&variant=copycat1&return=/
+
