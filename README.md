@@ -56,7 +56,7 @@ An experiment consists of the following fields:
   1. In naming the folder for the variants' templates.
   2. As the param name, when setting up GA4's custom dimension 
 - **Enabled?** - Whether the experiment is currently active. This can be used to pause or permanently stop the experiment
-- **Population Segment** - Optional field to limit the experiment to a specific population segment by percentage. Defaults to 100% of users.
+- **Population Segment** - Optional field to limit the experiment to a specific population segment by percentage. Defaults to 100% of users. The weights of the variants are distributed only across the included users. No event will be fired for excluded users (even when the fireEvent method is explicitly called).
 - **Variants** - The different variants for the experiment. E.g if you are testing different hero banners you would set their reference here. An "original" variant is pre-set and refers to the control group, represented by your current code. Its handle cannot be modified, and it cannot be deleted.
     Each variant comprises three fields:
   - Name: Human readable name. This will be sent to GA4 as the value (E.g "Wide Banner")
