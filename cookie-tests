@@ -28,3 +28,5 @@ https://craft5.ddev.site/actions/optimum/test?scenario=test-segment&experiment=w
 // Test with 50% segment (roughly half should be included)
 https://craft5.ddev.site/actions/optimum/test?scenario=test-segment&experiment=whatever&segment=50&variant=copycat1&return=/
 
+// Test segmentation in Twig
+https://craft5.ddev.site/actions/optimum/test?scenario=segmentation

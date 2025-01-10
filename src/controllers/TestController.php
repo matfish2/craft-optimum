@@ -6,6 +6,7 @@ use Craft;
 use craft\web\Controller;
 use yii\web\Cookie;
 use Carbon\Carbon;
+use matfish\Optimum\twig\OptimumExtension;
 
 class TestController extends Controller
 {
@@ -62,6 +63,25 @@ class TestController extends Controller
             case 'clear':
                 Craft::$app->response->cookies->remove($key);
                 return $this->redirect($returnUrl);
+            case 'segmentation':
+                $res = [];
+                $experiment = $this->request->getQueryParam('experiment', 'test');
+               
+                for ($i = 0; $i < 100; $i++) {
+                    // Clear the cookie before each iteration
+                    Craft::$app->response->cookies->remove("optimum_{$experiment}");
+                    
+                    $e = new OptimumExtension();
+                    $res[] = $e->getVariant($experiment);
+                }
+
+                // count the number of times each variant was returned
+                $counts = array_count_values($res);
+                
+                // Clear the cookie one final time to prevent it from affecting the next test run
+                Craft::$app->response->cookies->remove("optimum_{$experiment}");
+                
+                return $this->asJson($counts);
                 
             default:
                 return 'Available scenarios: force-included, force-excluded, test-segment, clear. Optional params: segment (0-100)';

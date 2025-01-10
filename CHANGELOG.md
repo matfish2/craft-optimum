@@ -1,5 +1,9 @@
 # Release Notes for Optimum
 
+## 2.3.1 - 2025-01-10
+### Fixed
+- Fix regression from 2.3.0: Method C was always returning the original variant [#11](https://github.com/matfish2/craft-optimum/issues/11)
+
 ## 2.3.0 - 2024-11-13
 ### Improved
 - Added Population Segment support
